@@ -1,2 +1,1 @@
-# bachelor-thesis
-Cell detection using convolutional neural networks
+# Cell detection using convolutional neural networks
