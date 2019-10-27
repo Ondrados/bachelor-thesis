@@ -3,10 +3,8 @@
 #
 
 # dataset
-data/
-stage1_test/
-stage1_train/
-stage2_test_final/
+
+data-science-bowl-2018/
 
 
 # Environments
