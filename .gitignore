@@ -4,6 +4,10 @@
 
 # dataset
 data/
+stage1_test/
+stage1_train/
+stage2_test_final/
+
 
 # Environments
 .env
