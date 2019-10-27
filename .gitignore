@@ -1,0 +1,16 @@
+#
+# Project gitignore
+#
+
+# dataset
+data/
+
+# Environments
+.env
+.venv
+env/
+venv/
+
+# System
+.DS_store
+._.DS_store
