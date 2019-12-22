@@ -9,7 +9,7 @@ from torch.utils.data import Dataset
 
 
 class MyDataset(Dataset):
-    def __init__(self, split="stage1_train", path_to_data='/Users/ondra/Dev/Personal/cnn-cells/data-science-bowl-2018'):
+    def __init__(self, split="stage1_train", path_to_data='/home/ubmi/Documents/cnn-cells/cnn-cells/data-science-bowl-2018'):
         self.split = split
         self.path = path_to_data + '/' + split
 

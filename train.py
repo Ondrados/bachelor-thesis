@@ -21,6 +21,7 @@ net.to(device=device)
 criterion = nn.MSELoss()
 optimizer = optim.Adam(net.parameters(), lr=0.001)
 
+training_loss = []
 for epoch in range(50):  # loop over the dataset multiple times
 
     running_loss = 0.0
@@ -38,17 +39,26 @@ for epoch in range(50):  # loop over the dataset multiple times
 
         # forward + backward + optimize
         outputs = net(inputs)
+        print(outputs.size())
+        print(masks.size())
         loss = criterion(outputs, masks)
-        print(loss.item())
         loss.backward()
         optimizer.step()
 
-        print(f'{i}/{len(trainloader)}/{epoch}')
         # print statistics
+        print(f'{i}/{len(trainloader)}/{epoch}')
         running_loss += loss.item()
-        if i % 2000 == 1999:    # print every 2000 mini-batches
-            print('[%d, %5d] loss: %.3f' %
-                  (epoch + 1, i + 1, running_loss / 2000))
-            running_loss = 0.0
+        if i % 100 == 0:    # every 1OO it
+            print('[%d, %d] loss: %.3f' %
+                  (epoch + 1, i + 1, running_loss / ((i+1)*100)))
+    running_loss = running_loss / len(trainloader)
+    training_loss.append(running_loss)
 
-print('Finished Training')
+    plt.plot(training_loss)
+    plt.show()
+    plt.imshow(outputs[0, 0, :, :].detach().cpu().numpy(), cmap="gray")
+    plt.show()
+    plt.imshow(masks[0, 0, :, :].detach().cpu().numpy(), cmap="gray")
+    plt.show()
+    torch.save(net.state_dict(), '/home/ubmi/Documents/cnn-cells/cnn-cells/my_model.pt')
+print('Training finished!!!')
