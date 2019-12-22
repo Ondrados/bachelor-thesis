@@ -4,25 +4,34 @@ from skimage.io import imread
 from matplotlib import pyplot as plt
 import numpy as np
 
-path_to_data='/Users/ondra/Dev/Personal/cnn-cells/data-science-bowl-2018'
-split='stage1_train'
+path_to_data = '/Users/ondra/Dev/Personal/cnn-cells/data-science-bowl-2018'
+split = 'stage1_train'
 path = path_to_data + '/' + split
 
-id_list = os.listdir(path)
+path_id_list = glob.glob(os.path.join(path, '*'))
+
 image_list = []
 mask_list = []
 
-for id in id_list:
-    images = glob.glob(path + '/' + id + '/images/*png')
-    masks = glob.glob(path + '/' + id + '/masks/*png')
+for path in path_id_list:
+    images = glob.glob(path + '/images/*png')
+    masks = glob.glob(path + '/masks/*png')
     image_list.extend(images)
     mask_list.append(masks)
 
-image_path = image_list[0]
-masks_path = mask_list[0]
-print(image_path)
+# with open('id_list.txt', 'w') as f:
+#     for item in id_list:
+#         f.write("%s\n" % item)
+# with open('image_list.txt', 'w') as f:
+#     for item in image_list:
+#         f.write("%s\n" % item)
+# with open('mask_list.txt', 'w') as f:
+#     for item in mask_list:
+#         f.write("%s\n" % item)
+
+image_path = image_list[464]
+masks_path = mask_list[464]
 image = imread(image_path)
-# comb_mask = np.zeros((256,256), dtype=float)
 
 comb_mask = None
 for path in masks_path:

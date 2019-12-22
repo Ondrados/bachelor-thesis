@@ -4,6 +4,7 @@ import numpy as np
 import torch
 
 from skimage.io import imread
+from skimage.color import rgb2gray
 from torch.utils.data import Dataset
 
 
@@ -12,23 +13,23 @@ class MyDataset(Dataset):
         self.split = split
         self.path = path_to_data + '/' + split
 
-        self.id_list = os.listdir(self.path)
+        self.path_id_list = glob.glob(os.path.join(self.path, '*'))
         self.image_list = []
         self.mask_list = []
 
-        for id in self.id_list:
-            images = glob.glob(self.path + '/' + id + '/images/*png')
-            masks = glob.glob(self.path + '/' + id + '/masks/*png')
+        for path_id in self.path_id_list:
+            images = glob.glob(path_id + '/images/*png')
+            masks = glob.glob(path_id + '/masks/*png')
             self.image_list.extend(images)
             self.mask_list.append(masks)
 
     def __len__(self):
-        return len(self.id_list)
+        return len(self.path_id_list)
 
     def __getitem__(self, index):
-        im = imread(self.image_list[index])
+        im = rgb2gray(imread(self.image_list[index]))
         msk = self.combine_masks(self.mask_list[index])
-        # pre process transforming to tensor
+        # pre process before transforming to tensor
         image = torch.Tensor(im.astype(np.float32))
         mask = torch.Tensor(msk.astype(np.float32))
         return image, mask
