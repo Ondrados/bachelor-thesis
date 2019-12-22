@@ -10,7 +10,7 @@ from unet import UNet
 batch = 16
 dataset = MyDataset(split="stage1_train")
 trainloader = data.DataLoader(
-    dataset, batch_size=batch, num_workers=8, shuffle=True, drop_last=True,)
+    dataset, batch_size=batch, num_workers=3, shuffle=True, drop_last=True,)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(device)
