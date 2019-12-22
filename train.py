@@ -29,16 +29,21 @@ for epoch in range(50):  # loop over the dataset multiple times
         inputs, masks = data[0].to(device=device), data[1].to(device=device)
         inputs = inputs.unsqueeze(1)
         masks = masks.unsqueeze(1)
+
+        inputs.requires_grad = True
+        masks.requires_grad = True
+
         # zero the parameter gradients
         optimizer.zero_grad()
 
         # forward + backward + optimize
         outputs = net(inputs)
         loss = criterion(outputs, masks)
-        print(loss)
+        print(loss.item())
         loss.backward()
         optimizer.step()
 
+        print(f'{i}/{len(trainloader)}/{epoch}')
         # print statistics
         running_loss += loss.item()
         if i % 2000 == 1999:    # print every 2000 mini-batches
