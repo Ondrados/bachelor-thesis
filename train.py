@@ -39,8 +39,6 @@ for epoch in range(50):  # loop over the dataset multiple times
 
         # forward + backward + optimize
         outputs = net(inputs)
-        print(outputs.size())
-        print(masks.size())
         loss = criterion(outputs, masks)
         loss.backward()
         optimizer.step()
