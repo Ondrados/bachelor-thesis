@@ -76,11 +76,11 @@ if __name__ == "__main__":
 
     for i, data in enumerate(trainloader):
         inputs, masks = data[0].to(device=device), data[1].to(device=device)
-        fig = plt.figure(figsize=(1, 2))
+        fig = plt.figure()
         fig.add_subplot(1, 2, 1)
-        plt.imshow(inputs[0,0,:,:].detach().cpu().numpy(), cmap="gray", aspect='auto')
+        plt.imshow(inputs[0,0,:,:].detach().cpu().numpy(), cmap="gray")
         fig.add_subplot(1, 2, 2)
-        plt.imshow(masks[0,0,:,:].detach().cpu().numpy(), cmap="gray", aspect='auto')
+        plt.imshow(masks[0,0,:,:].detach().cpu().numpy(), cmap="gray")
 
         #plt.show()
         plt.savefig('dataset_test.png')
