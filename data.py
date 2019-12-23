@@ -1,5 +1,6 @@
 import os
 import glob
+from PIL import Image
 from skimage.io import imread
 from matplotlib import pyplot as plt
 import numpy as np
@@ -31,14 +32,18 @@ for path in path_id_list:
 
 image_path = image_list[464]
 masks_path = mask_list[464]
-image = imread(image_path)
+# image = imread(image_path)
+image = Image.open(image_path)
 
 comb_mask = None
 for path in masks_path:
-    mask = imread(path)
+    # mask = imread(path)
+    mask = Image.open(path)
     if comb_mask is None:
         comb_mask = np.zeros_like(mask, dtype=np.float32())
     comb_mask += mask
+
+Image.fromarray(comb_mask)
 
 fig = plt.figure(figsize=(1, 2))
 fig.add_subplot(1, 2, 1)
