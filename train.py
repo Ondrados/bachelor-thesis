@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import matplotlib
-matplotlib.use('GTKAgg')
+matplotlib.use('GTK3Agg')
 import matplotlib.pyplot as plt
 from torch.utils import data
 
