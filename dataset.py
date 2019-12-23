@@ -3,7 +3,7 @@ import glob
 import numpy as np
 import torch
 import matplotlib
-matplotlib.use('GTK3Agg')
+matplotlib.use('TkAgg')
 from PIL import Image
 from skimage.io import imread
 from skimage.color import rgb2gray
