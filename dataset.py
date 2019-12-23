@@ -69,7 +69,7 @@ class MyDataset(Dataset):
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(device)
-    dataset = MyDataset(split='stage1_train', path_to_data = '/Users/ondra/Dev/Personal/cnn-cells/data-science-bowl-2018')
+    dataset = MyDataset(split='stage1_train', path_to_data = '/home/ubmi/Documents/cnn-cells/cnn-cells/data-science-bowl-2018')
     trainloader = DataLoader(dataset,batch_size=1, num_workers=0, shuffle=True, drop_last=True)
 
     for i, data in enumerate(trainloader):
