@@ -2,6 +2,7 @@ import os
 import glob
 import numpy as np
 import torch
+import matplotlib
 from PIL import Image
 from skimage.io import imread
 from skimage.color import rgb2gray
@@ -11,6 +12,7 @@ from torch.utils.data import Dataset, DataLoader
 
 from torchvision import transforms as T
 
+matplotlib.use('GTK')
 
 class MyDataset(Dataset):
     def __init__(self, transforms=None, split="stage1_train", path_to_data='/home/ubmi/Documents/cnn-cells/cnn-cells/data-science-bowl-2018'):
@@ -74,8 +76,6 @@ if __name__ == "__main__":
 
     for i, data in enumerate(trainloader):
         inputs, masks = data[0].to(device=device), data[1].to(device=device)
-        print(inputs.shape)
-        print(masks.shape)
         fig = plt.figure(figsize=(1, 2))
         fig.add_subplot(1, 2, 1)
         plt.imshow(inputs[0,0,:,:].detach().cpu().numpy(), cmap="gray")
