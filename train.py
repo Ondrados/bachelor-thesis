@@ -46,25 +46,23 @@ for epoch in range(50):  # loop over the dataset multiple times
         # print statistics
         print(f'{i}/{len(trainloader)}/{epoch}')
         running_loss += loss.item()
-        if i % 100 == 0:    # every 1OO it
-            print('[%d, %d] loss: %.3f' %
-                  (epoch + 1, i + 1, running_loss / ((i+1)*100)))
     running_loss = running_loss / len(trainloader)
     training_loss.append(running_loss)
 
+    fig = plt.figure()
     plt.plot(training_loss)
     #plt.show()
-    plt.savefig('training_loss.png')
+    plt.savefig('images/training_loss.png')
 
-    fig = plt.figure()
-    fig.add_subplot(1, 3, 1)
+    fig2 = plt.figure()
+    fig2.add_subplot(1, 3, 1)
     plt.imshow(inputs[0, 0, :, :].detach().cpu().numpy(), cmap="gray")
-    fig.add_subplot(1, 3, 2)
+    fig2.add_subplot(1, 3, 2)
     plt.imshow(masks[0, 0, :, :].detach().cpu().numpy(), cmap="gray")
-    fig.add_subplot(1, 3, 3)
+    fig2.add_subplot(1, 3, 3)
     plt.imshow(outputs[0, 0, :, :].detach().cpu().numpy(), cmap="gray")
     #plt.show(block=True)
-    plt.savefig('output.png')
+    plt.savefig('images/output.png')
 
     torch.save(net.state_dict(), '/home/ubmi/Documents/cnn-cells/cnn-cells/my_model.pt')
 

@@ -32,12 +32,10 @@ for path in path_id_list:
 
 image_path = image_list[464]
 masks_path = mask_list[464]
-# image = imread(image_path)
 image = Image.open(image_path)
 
 comb_mask = None
 for path in masks_path:
-    # mask = imread(path)
     mask = Image.open(path)
     if comb_mask is None:
         comb_mask = np.zeros_like(mask, dtype=np.float32())

@@ -42,14 +42,9 @@ class MyDataset(Dataset):
         return len(self.path_id_list)
 
     def __getitem__(self, index):
-        # im = resize(rgb2gray(imread(self.image_list[index])),(256, 256))
-        # im = rgb2gray(imread(self.image_list[index]))
         image = Image.open(self.image_list[index])
-        # msk = resize(self.combine_masks(self.mask_list[index]),(256, 256))
         mask = self.combine_masks(self.mask_list[index])
-        # pre process before transforming to tensor
-        # image = torch.Tensor(im.astype(np.float32))
-        # mask = torch.Tensor(msk.astype(np.float32))
+        # make transforms
         image = self.transforms(image)
         mask = self.transforms(mask)
         return image, mask
@@ -57,7 +52,6 @@ class MyDataset(Dataset):
     def combine_masks(self, mask_paths):
         comb_mask = None
         for path in mask_paths:
-            #mask = imread(path)
             mask = Image.open(path)
             if comb_mask is None:
                 comb_mask = np.zeros_like(mask)
@@ -71,7 +65,7 @@ class MyDataset(Dataset):
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(device)
-    dataset = MyDataset(split='stage1_train', path_to_data = '/home/ubmi/Documents/cnn-cells/cnn-cells/data-science-bowl-2018')
+    dataset = MyDataset(split='stage1_train', path_to_data = '/Users/ondra/Dev/Personal/cnn-cells/data-science-bowl-2018')
     trainloader = DataLoader(dataset,batch_size=1, num_workers=0, shuffle=True, drop_last=True)
 
     for i, data in enumerate(trainloader):
@@ -83,5 +77,5 @@ if __name__ == "__main__":
         plt.imshow(masks[0,0,:,:].detach().cpu().numpy(), cmap="gray")
 
         #plt.show()
-        plt.savefig('dataset_test.png')
+        plt.savefig('images/dataset_test.png')
         break
