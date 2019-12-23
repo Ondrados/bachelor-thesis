@@ -64,6 +64,6 @@ for epoch in range(50):  # loop over the dataset multiple times
     #plt.show(block=True)
     plt.savefig('images/output.png')
 
-    torch.save(net.state_dict(), '/home/ubmi/Documents/cnn-cells/cnn-cells/my_model.pt')
+    torch.save(net.state_dict(), '/home/ubmi/Documents/cnn-cells/cnn-cells/models/my_model.pt')
 
 print('Training finished!!!')

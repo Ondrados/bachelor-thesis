@@ -1,11 +1,12 @@
 #
 # Project gitignore
 #
+/models
 
 # dataset
-
 data-science-bowl-2018/
 
+#IDEA
 .idea
 
 # Environments
