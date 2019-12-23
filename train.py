@@ -104,9 +104,10 @@ for epoch in range(50):  # loop over the dataset multiple times
     fig = plt.figure()
     plt.plot(training_loss)
     plt.plot(validation_loss)
+    plt.legend()
     # plt.show()
     plt.savefig('images/training_loss.png')
-
+    plt.close("all")
     torch.save(net.state_dict(), '/home/ubmi/Documents/cnn-cells/cnn-cells/models/my_model.pt')
 
 print('Training finished!!!')
