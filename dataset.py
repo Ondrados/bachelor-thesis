@@ -3,6 +3,7 @@ import glob
 import numpy as np
 import torch
 import matplotlib
+matplotlib.use('GTKAgg')
 from PIL import Image
 from skimage.io import imread
 from skimage.color import rgb2gray
@@ -12,7 +13,7 @@ from torch.utils.data import Dataset, DataLoader
 
 from torchvision import transforms as T
 
-matplotlib.use('GTK')
+
 
 class MyDataset(Dataset):
     def __init__(self, transforms=None, split="stage1_train", path_to_data='/home/ubmi/Documents/cnn-cells/cnn-cells/data-science-bowl-2018'):

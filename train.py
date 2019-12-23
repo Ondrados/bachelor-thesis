@@ -3,13 +3,12 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import matplotlib
+matplotlib.use('GTKAgg')
 import matplotlib.pyplot as plt
 from torch.utils import data
 
 from dataset import MyDataset
 from unet import UNet
-
-matplotlib.use('GTK')
 
 batch = 8
 dataset = MyDataset(split="stage1_train")
