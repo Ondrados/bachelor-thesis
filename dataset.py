@@ -3,7 +3,6 @@ import glob
 import numpy as np
 import torch
 import matplotlib
-matplotlib.use('TkAgg')
 from PIL import Image
 from skimage.io import imread
 from skimage.color import rgb2gray
@@ -83,5 +82,6 @@ if __name__ == "__main__":
         fig.add_subplot(1, 2, 2)
         plt.imshow(masks[0,0,:,:].detach().cpu().numpy(), cmap="gray")
 
-        plt.show()
+        #plt.show()
+        plt.savefig('dataset_test.png')
         break

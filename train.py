@@ -3,7 +3,6 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import matplotlib
-matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 from torch.utils import data
 
@@ -54,7 +53,8 @@ for epoch in range(50):  # loop over the dataset multiple times
     training_loss.append(running_loss)
 
     plt.plot(training_loss)
-    plt.show()
+    #plt.show()
+    plt.savefig('training_loss.png')
 
     fig = plt.figure(figsize=(1, 3))
     fig.add_subplot(1, 3, 1)
@@ -63,7 +63,8 @@ for epoch in range(50):  # loop over the dataset multiple times
     plt.imshow(masks[0, 0, :, :].detach().cpu().numpy(), cmap="gray")
     fig.add_subplot(1, 3, 3)
     plt.imshow(outputs[0, 0, :, :].detach().cpu().numpy(), cmap="gray")
-    plt.show(block=True)
+    #plt.show(block=True)
+    plt.savefig('output.png')
 
     torch.save(net.state_dict(), '/home/ubmi/Documents/cnn-cells/cnn-cells/my_model.pt')
 
