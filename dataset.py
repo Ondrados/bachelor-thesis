@@ -78,9 +78,9 @@ if __name__ == "__main__":
         inputs, masks = data[0].to(device=device), data[1].to(device=device)
         fig = plt.figure(figsize=(1, 2))
         fig.add_subplot(1, 2, 1)
-        plt.imshow(inputs[0,0,:,:].detach().cpu().numpy(), cmap="gray")
+        plt.imshow(inputs[0,0,:,:].detach().cpu().numpy(), cmap="gray", aspect='auto')
         fig.add_subplot(1, 2, 2)
-        plt.imshow(masks[0,0,:,:].detach().cpu().numpy(), cmap="gray")
+        plt.imshow(masks[0,0,:,:].detach().cpu().numpy(), cmap="gray", aspect='auto')
 
         #plt.show()
         plt.savefig('dataset_test.png')
