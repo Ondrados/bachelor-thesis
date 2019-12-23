@@ -78,9 +78,9 @@ if __name__ == "__main__":
         print(masks.shape)
         fig = plt.figure(figsize=(1, 2))
         fig.add_subplot(1, 2, 1)
-        plt.imshow(inputs[0,0,:,:], cmap='gray')
+        plt.imshow(inputs[0,0,:,:].detach().cpu().numpy(), cmap="gray")
         fig.add_subplot(1, 2, 2)
-        plt.imshow(masks[0,0,:,:], cmap='gray')
+        plt.imshow(masks[0,0,:,:].detach().cpu().numpy(), cmap="gray")
 
         plt.show()
         break
