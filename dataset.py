@@ -8,8 +8,8 @@ from skimage.io import imread
 from skimage.color import rgb2gray
 from skimage.transform import resize
 from matplotlib import pyplot as plt
+from scipy.ndimage.filters import gaussian_filter
 from torch.utils.data import Dataset, DataLoader
-
 from torchvision import transforms as T
 
 
@@ -52,10 +52,23 @@ class MyDataset(Dataset):
     def combine_masks(self, mask_paths):
         comb_mask = None
         for path in mask_paths:
-            mask = Image.open(path)
+            # mask = Image.open(path)
+            mask = imread(path)
+            count = (mask == 255).sum()
+            y, x = np.argwhere(mask == 255).sum(0) / count
             if comb_mask is None:
                 comb_mask = np.zeros_like(mask)
-            comb_mask += mask
+                # comb_mask2 = np.zeros_like(mask)
+            # comb_mask += mask
+            comb_mask[int(y), int(x)] = 255
+            # blurred = gaussian_filter(comb_mask2, sigma=0.5)
+        # fig = plt.figure()
+        # fig.add_subplot(1, 2, 1)
+        # plt.imshow(comb_mask,cmap="gray")
+        # fig.add_subplot(1, 2, 2)
+        # plt.imshow(comb_mask2,cmap="gray")
+        # plt.show(block=True)
+
         return Image.fromarray(comb_mask)
 
     def pre_process(self):
