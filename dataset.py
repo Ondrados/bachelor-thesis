@@ -65,11 +65,11 @@ class MyDataset(Dataset):
             y, x = np.argwhere(mask == 255).sum(0) / count
             if comb_mask is None:
                 # comb_mask = np.zeros_like(mask)
-                comb_mask2 = np.zeros_like(mask)
+                comb_mask = np.zeros_like(mask)
             # comb_mask += mask
             rr, cc = draw.circle(y, x, radius=3)
             try:
-                comb_mask2[rr, cc] = 255
+                comb_mask[rr, cc] = 255
             except IndexError:
                 pass
             # blurred = gaussian_filter(comb_mask2, sigma=0.5)
@@ -77,10 +77,10 @@ class MyDataset(Dataset):
         # fig.add_subplot(1, 2, 1)
         # plt.imshow(comb_mask,cmap="gray")
         # fig.add_subplot(1, 2, 2)
-        # plt.imshow(comb_mask2,cmap="gray")
+        # plt.imshow(comb_mask,cmap="gray")
         # plt.show(block=True)
 
-        return Image.fromarray(comb_mask2)
+        return Image.fromarray(comb_mask)
 
     def pre_process(self):
         # pre processing
@@ -89,7 +89,7 @@ class MyDataset(Dataset):
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(device)
-    dataset = MyDataset(split='stage1_train', path_to_data = '/home/ubmi/Documents/cnn-cells/cnn-cells/data-science-bowl-2018')
+    dataset = MyDataset(split='stage1_train', path_to_data = '/Users/ondra/Dev/Personal/cnn-cells/data-science-bowl-2018')
     trainloader = DataLoader(dataset,batch_size=1, num_workers=0, shuffle=True, drop_last=True)
 
     for i, data in enumerate(trainloader):
@@ -100,6 +100,6 @@ if __name__ == "__main__":
         fig.add_subplot(1, 2, 2)
         plt.imshow(masks[0,0,:,:].detach().cpu().numpy(), cmap="gray")
 
-        #plt.show()
-        plt.savefig('images/dataset_test.png')
+        plt.show()
+        # plt.savefig('images/dataset_test.png')
         break
