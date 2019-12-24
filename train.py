@@ -26,8 +26,8 @@ print(device)
 net = UNet(n_channels=1, n_classes=1)
 net.to(device=device)
 
-# criterion = nn.MSELoss()
-criterion = nn.BCELoss()
+criterion = nn.MSELoss()
+# criterion = nn.BCELoss()
 optimizer = optim.Adam(net.parameters(), lr=0.001)
 
 training_loss = []
@@ -49,7 +49,7 @@ def train():
         # forward + backward + optimize
         outputs = net(inputs)
         torch.where(outputs > 0.5, torch.ones(1).cuda(),torch.zeros(1).cuda())
-        loss = criterion(input=outputs,target=masks.detach())
+        loss = criterion(outputs, masks)
         loss.backward()
         optimizer.step()
 
