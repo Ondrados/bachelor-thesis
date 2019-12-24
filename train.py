@@ -84,7 +84,6 @@ def evaluate():
             print(f'{i}/{len(val_loader)}/{epoch}/eval')
             running_loss += loss.item()
         running_loss = running_loss / len(val_loader)
-        print(running_loss)
         validation_loss.append(running_loss)
 
         fig = plt.figure()

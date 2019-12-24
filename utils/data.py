@@ -2,6 +2,7 @@ import os
 import glob
 from PIL import Image
 from skimage.io import imread
+from skimage.measure import regionprops
 from matplotlib import pyplot as plt
 import numpy as np
 
@@ -30,23 +31,33 @@ for path in path_id_list:
 #     for item in mask_list:
 #         f.write("%s\n" % item)
 
-image_path = image_list[464]
-masks_path = mask_list[464]
+image_path = image_list[463]
+masks_path = mask_list[463]
 image = Image.open(image_path)
 
-comb_mask = None
-for path in masks_path:
-    mask = Image.open(path)
-    if comb_mask is None:
-        comb_mask = np.zeros_like(mask, dtype=np.float32())
-    comb_mask += mask
+one_mask = imread(masks_path[3])
+count = (one_mask == 255).sum()
+y, x = np.argwhere(one_mask==255).sum(0)/count
+# props = regionprops(one_mask)
+plt.imshow(one_mask)
+# plt.scatter(props[0].centroid[1],props[0].centroid[0],color='r')
+# plt.scatter(x,y,color='r')
+plt.show()
 
-Image.fromarray(comb_mask)
+# comb_mask = None
+# for path in masks_path:
+#     mask = Image.open(path)
+#     # mask = imread(path)
+#     if comb_mask is None:
+#         comb_mask = np.zeros_like(mask, dtype=np.float32())
+#     comb_mask += mask
 
-fig = plt.figure(figsize=(1, 2))
-fig.add_subplot(1, 2, 1)
-plt.imshow(image)
-fig.add_subplot(1, 2, 2)
-plt.imshow(comb_mask, cmap='binary')
+# Image.fromarray(comb_mask)
 
-plt.show(block=True)
+# fig = plt.figure(figsize=(1, 2))
+# fig.add_subplot(1, 2, 1)
+# plt.imshow(image)
+# fig.add_subplot(1, 2, 2)
+# plt.imshow(comb_mask, cmap='binary')
+#
+# plt.show(block=True)
