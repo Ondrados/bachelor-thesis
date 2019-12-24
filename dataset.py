@@ -4,6 +4,7 @@ import numpy as np
 import torch
 import matplotlib
 from PIL import Image
+from skimage import draw
 from skimage.io import imread
 from skimage.color import rgb2gray
 from skimage.transform import resize
@@ -47,6 +48,12 @@ class MyDataset(Dataset):
         # make transforms
         image = self.transforms(image)
         mask = self.transforms(mask)
+        # fig = plt.figure()
+        # fig.add_subplot(1, 2, 1)
+        # plt.imshow(image[0,:,:], cmap="gray")
+        # fig.add_subplot(1, 2, 2)
+        # plt.imshow(mask[0,:,:], cmap="gray")
+        # plt.show(block=True)
         return image, mask
 
     def combine_masks(self, mask_paths):
@@ -57,10 +64,14 @@ class MyDataset(Dataset):
             count = (mask == 255).sum()
             y, x = np.argwhere(mask == 255).sum(0) / count
             if comb_mask is None:
-                comb_mask = np.zeros_like(mask)
-                # comb_mask2 = np.zeros_like(mask)
+                # comb_mask = np.zeros_like(mask)
+                comb_mask2 = np.zeros_like(mask)
             # comb_mask += mask
-            comb_mask[int(y), int(x)] = 255
+            rr, cc = draw.circle(y, x, radius=3)
+            try:
+                comb_mask2[rr, cc] = 255
+            except IndexError:
+                pass
             # blurred = gaussian_filter(comb_mask2, sigma=0.5)
         # fig = plt.figure()
         # fig.add_subplot(1, 2, 1)
@@ -69,7 +80,7 @@ class MyDataset(Dataset):
         # plt.imshow(comb_mask2,cmap="gray")
         # plt.show(block=True)
 
-        return Image.fromarray(comb_mask)
+        return Image.fromarray(comb_mask2)
 
     def pre_process(self):
         # pre processing

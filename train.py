@@ -25,7 +25,8 @@ print(device)
 net = UNet(n_channels=1, n_classes=1)
 net.to(device=device)
 
-criterion = nn.MSELoss()
+# criterion = nn.MSELoss()
+criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(net.parameters(), lr=0.001)
 
 training_loss = []
@@ -46,7 +47,7 @@ def train():
 
         # forward + backward + optimize
         outputs = net(inputs)
-        loss = criterion(outputs, masks)
+        loss = criterion(input=outputs,target=masks)
         loss.backward()
         optimizer.step()
 
