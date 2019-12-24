@@ -49,7 +49,7 @@ def train():
         # forward + backward + optimize
         outputs = net(inputs)
         torch.where(outputs > 0.5, torch.ones(1).cuda(),torch.zeros(1).cuda())
-        loss = criterion(input=outputs,target=Variable(masks[0,:,:,:].long()))
+        loss = criterion(input=outputs,target=Variable(masks[:,0,:,:].long()))
         loss.backward()
         optimizer.step()
 
