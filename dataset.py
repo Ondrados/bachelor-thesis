@@ -45,15 +45,20 @@ class MyDataset(Dataset):
     def __getitem__(self, index):
         image = Image.open(self.image_list[index])
         mask = self.combine_masks(self.mask_list[index])
-        # make transforms
+        # # make transforms
+        # fig = plt.figure()
+        # # fig.add_subplot(1, 2, 1)
+        # plt.title("Image")
+        # plt.imshow(image)
+        # # fig.add_subplot(1, 2, 2)
+        # # plt.title("Mask")
+        # # plt.imshow(mask, cmap="gray")
+        # # plt.show()
+        # plt.savefig('images/dataset-6.png')
         image = self.transforms(image)
         mask = self.transforms(mask)
-        # fig = plt.figure()
-        # fig.add_subplot(1, 2, 1)
-        # plt.imshow(image[0,:,:], cmap="gray")
-        # fig.add_subplot(1, 2, 2)
-        # plt.imshow(mask[0,:,:], cmap="gray")
-        # plt.show(block=True)
+
+        plt.show(block=True)
         return image, mask
 
     def combine_masks(self, mask_paths):
@@ -72,7 +77,7 @@ class MyDataset(Dataset):
                 comb_mask[rr, cc] = 255
             except IndexError:
                 pass
-            # blurred = gaussian_filter(comb_mask2, sigma=0.5)
+            blurred = gaussian_filter(comb_mask, sigma=1)
         # fig = plt.figure()
         # fig.add_subplot(1, 2, 1)
         # plt.imshow(comb_mask,cmap="gray")
@@ -80,7 +85,7 @@ class MyDataset(Dataset):
         # plt.imshow(comb_mask,cmap="gray")
         # plt.show(block=True)
 
-        return Image.fromarray(comb_mask)
+        return Image.fromarray(blurred)
 
     def pre_process(self):
         # pre processing
@@ -96,10 +101,13 @@ if __name__ == "__main__":
         inputs, masks = data[0].to(device=device), data[1].to(device=device)
         fig = plt.figure()
         fig.add_subplot(1, 2, 1)
+        plt.title("Image")
         plt.imshow(inputs[0,0,:,:].detach().cpu().numpy(), cmap="gray")
         fig.add_subplot(1, 2, 2)
         plt.imshow(masks[0,0,:,:].detach().cpu().numpy(), cmap="gray")
+        plt.title("Mask")
 
         plt.show()
-        # plt.savefig('images/dataset_test.png')
+        # plt.savefig('images/image_mask-1.png')
+        plt.close("all")
         break
