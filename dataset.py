@@ -13,17 +13,21 @@ from scipy.ndimage.filters import gaussian_filter
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms as T
 
+from settings import BASE_DIR
+
+dataset_path = os.path.join(BASE_DIR, 'data-science-bowl-2018')
 
 
 class MyDataset(Dataset):
-    def __init__(self, transforms=None, split="stage1_train", path_to_data='/home/ubmi/Documents/cnn-cells/cnn-cells/data-science-bowl-2018'):
+    def __init__(self, transforms=None, split="stage1_train", path=dataset_path):
         self.split = split
-        self.path = path_to_data + '/' + split
+        self.path = path + '/' + split
 
         self.path_id_list = glob.glob(os.path.join(self.path, '*'))
         self.image_list = []
         self.mask_list = []
 
+        # TODO: remake this to custom transforms - random crop
         if transforms is not None:
             self.transforms = transforms
         else:
@@ -91,23 +95,25 @@ class MyDataset(Dataset):
         # pre processing
         pass
 
+
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(device)
-    dataset = MyDataset(split='stage1_train', path_to_data = '/Users/ondra/Dev/Personal/cnn-cells/data-science-bowl-2018')
-    trainloader = DataLoader(dataset,batch_size=1, num_workers=0, shuffle=True, drop_last=True)
+    print(f"Running on: {device}")
 
-    for i, data in enumerate(trainloader):
-        inputs, masks = data[0].to(device=device), data[1].to(device=device)
-        fig = plt.figure()
-        fig.add_subplot(1, 2, 1)
-        plt.title("Image")
-        plt.imshow(inputs[0,0,:,:].detach().cpu().numpy(), cmap="gray")
-        fig.add_subplot(1, 2, 2)
-        plt.imshow(masks[0,0,:,:].detach().cpu().numpy(), cmap="gray")
-        plt.title("Mask")
+    dataset = MyDataset(split='stage1_train')
+    trainloader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=True, drop_last=True)
 
-        plt.show()
-        # plt.savefig('images/image_mask-99.png')
-        plt.close("all")
-        break
+    # for i, data in enumerate(trainloader):
+    #     inputs, masks = data[0].to(device=device), data[1].to(device=device)
+    #     fig = plt.figure()
+    #     fig.add_subplot(1, 2, 1)
+    #     plt.title("Image")
+    #     plt.imshow(inputs[0,0,:,:].detach().cpu().numpy(), cmap="gray")
+    #     fig.add_subplot(1, 2, 2)
+    #     plt.imshow(masks[0,0,:,:].detach().cpu().numpy(), cmap="gray")
+    #     plt.title("Mask")
+    #
+    #     plt.show()
+    #     # plt.savefig('images/image_mask-99.png')
+    #     plt.close("all")
+    #     break
