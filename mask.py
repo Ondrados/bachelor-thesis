@@ -86,8 +86,8 @@ coordinates = peak_local_max(label_h_maxima, indices=True)
 # plt.plot(coordinates[:,1],coordinates[:,0], 'r+')
 
 plt.imshow(inputs[0, 0, :, :].detach().cpu().numpy(), cmap="gray")
-plt.plot(coordinates[:,1],coordinates[:,0], 'r+', markersize=10)
-plt.savefig('images/detect6.png')
+plt.plot(coordinates[:, 1], coordinates[:, 0], 'r+', markersize=10)
+# plt.savefig('images/detect6.png')
 plt.show(block=True)
 plt.close()
 

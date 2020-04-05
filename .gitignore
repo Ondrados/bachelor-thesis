@@ -3,8 +3,15 @@
 #
 /models
 
+# images
+/images
+/imgs
+
+# jupyter
+/.ipynb_checkpoints
+
 # dataset
-data-science-bowl-2018/
+/data-science-bowl-2018
 
 #IDEA
 .idea
@@ -12,8 +19,8 @@ data-science-bowl-2018/
 # Environments
 .env
 .venv
-env/
-venv/
+/env
+/venv
 
 # System
 .DS_store

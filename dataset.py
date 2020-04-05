@@ -108,6 +108,6 @@ if __name__ == "__main__":
         plt.title("Mask")
 
         plt.show()
-        # plt.savefig('images/image_mask-1.png')
+        # plt.savefig('images/image_mask-99.png')
         plt.close("all")
         break
