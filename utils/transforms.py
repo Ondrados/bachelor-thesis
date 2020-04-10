@@ -1,3 +1,4 @@
+import torch
 from torchvision import transforms as T
 
 
@@ -70,37 +71,36 @@ class RandomCrop(object):
         return {'image': image, 'landmarks': landmarks}
 
 
-class ToTensor(T.ToTensor):
-    """Convert a ``PIL Image`` or ``numpy.ndarray`` to tensor.
-
-    Converts a PIL Image or numpy.ndarray (H x W x C) in the range
-    [0, 255] to a torch.FloatTensor of shape (C x H x W) in the range [0.0, 1.0]
-    if the PIL Image belongs to one of the modes (L, LA, P, I, F, RGB, YCbCr, RGBA, CMYK, 1)
-    or if the numpy.ndarray has dtype = np.uint8
-
-    In the other cases, tensors are returned without scaling.
-    """
-
-    def __call__(self, target):
-        """
-        Args:
-            pic (PIL Image or numpy.ndarray): Image to be converted to tensor.
-
-        Returns:
-            Tensor: Converted image.
-        """
-        return super().__call__(target["image"])
-
-
-# class ToTensor(object):
-#     """Convert ndarrays in sample to Tensors."""
+# class ToTensor(T.ToTensor):
+#     """Convert a ``PIL Image`` or ``numpy.ndarray`` to tensor.
 #
-#     def __call__(self, sample):
-#         image, boxes = sample['image'], sample['boxes']
+#     Converts a PIL Image or numpy.ndarray (H x W x C) in the range
+#     [0, 255] to a torch.FloatTensor of shape (C x H x W) in the range [0.0, 1.0]
+#     if the PIL Image belongs to one of the modes (L, LA, P, I, F, RGB, YCbCr, RGBA, CMYK, 1)
+#     or if the numpy.ndarray has dtype = np.uint8
 #
-#         # swap color axis because
-#         # numpy image: H x W x C
-#         # torch image: C X H X W
-#         image = image.transpose((0, 1))
-#         return {'image': torch.from_numpy(image),
-#                 'boxes': torch.from_numpy(boxes)}
+#     In the other cases, tensors are returned without scaling.
+#     """
+#
+#     def __call__(self, target):
+#         return super().__call__(target["image"])
+
+
+class ToTensor(object):
+    """Convert ndarrays in sample to Tensors."""
+
+    def __call__(self, sample):
+        image, boxes, labels = sample['image'], sample["boxes"], sample["labels"]
+
+        # swap color axis because
+        # numpy image: H x W x C
+        # torch image: C X H X W
+        image = image.transpose((2, 0, 1))
+        image = torch.from_numpy(image)
+        image = image[None, :, :, :]
+        image = image.float()
+        return {
+            "image": image,
+            "boxes": boxes,
+            "labels": labels
+            }

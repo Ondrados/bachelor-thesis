@@ -28,8 +28,6 @@ def get_transform(train=False):
     return T.Compose(transforms)
 
 
-
-
 class MyDataset(Dataset):
     def __init__(self, transforms=None, split="stage1_train", path=dataset_path):
         self.split = split
@@ -41,7 +39,6 @@ class MyDataset(Dataset):
         self.id_list = []
         self.image_list = []
         self.mask_list = []
-
 
         for path_id in self.path_id_list:
             images = glob.glob(path_id + '/images/*png')
@@ -57,30 +54,21 @@ class MyDataset(Dataset):
         # print(f"ID: {self.id[index]}")
         # print(f"Image: {self.image_list[index]}")
         # print(f"Masks: {self.mask_list[index]}")
-        image = Image.open(self.image_list[index])
+        image = np.array(Image.open(self.image_list[index]), dtype=np.uint8)
+        # image = Image.open(self.image_list[index])
         # mask = self.combine_masks(self.mask_list[index])
         boxes = self.mask_to_bbox(self.mask_list[index])
-        # # make transforms
-        # fig = plt.figure()
-        # # fig.add_subplot(1, 2, 1)
-        # plt.title("Image")
-        # plt.imshow(image)
-        # # fig.add_subplot(1, 2, 2)
-        # # plt.title("Mask")
-        # # plt.imshow(mask, cmap="gray")
-        # # plt.show()
-        # plt.savefig('images/dataset-6.png')
-        target = {}
-        target["id"] = self.id_list[index]
-        target["boxes"] = boxes
+        labels = 1
+        # target = {}
+        # target["id"] = self.id_list[index]
+        # target["boxes"] = boxes
         # target["mask"] = mask
+        sample = {'image': image, 'boxes': boxes, 'labels': labels, 'id': self.id_list[index]}
 
         if self.transforms is not None:
-            sample = {'image': image, 'target': target}
             sample = self.transforms(sample)
 
-        plt.show(block=True)
-        return image, target
+        return sample
 
     def mask_to_bbox(self, mask_paths):
         boxes = []
@@ -129,9 +117,10 @@ if __name__ == "__main__":
     dataset = MyDataset(split='stage1_train', transforms=get_transform())
     trainloader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=True, drop_last=True)
 
-    image, target = next(iter(dataset))
-
-    boxes = target["boxes"]
+    # image, target = next(iter(dataset))
+    sample = dataset[100]
+    image = sample["image"]
+    boxes = sample["boxes"]
 
     draw = ImageDraw.Draw(image)
     for box in boxes:
