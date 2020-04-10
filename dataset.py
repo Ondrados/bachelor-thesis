@@ -2,12 +2,9 @@ import os
 import glob
 import numpy as np
 import torch
-import matplotlib
 from PIL import Image, ImageDraw
 from skimage import draw
 from skimage.io import imread
-from skimage.color import rgb2gray
-from skimage.transform import resize
 from matplotlib import pyplot as plt
 from scipy.ndimage.filters import gaussian_filter
 from torch.utils.data import Dataset, DataLoader
@@ -23,7 +20,7 @@ def get_transform(train=False):
     transforms = []
     transforms.append(my_T.ToTensor())
     if train:
-        # TODO: add train transforms
+        # TODO: add rescale to (256, 256)
         pass
     return T.Compose(transforms)
 
@@ -51,19 +48,13 @@ class MyDataset(Dataset):
         return len(self.path_id_list)
 
     def __getitem__(self, index):
-        # print(f"ID: {self.id[index]}")
-        # print(f"Image: {self.image_list[index]}")
-        # print(f"Masks: {self.mask_list[index]}")
         image = np.array(Image.open(self.image_list[index]), dtype=np.uint8)
-        # image = Image.open(self.image_list[index])
-        # mask = self.combine_masks(self.mask_list[index])
-        boxes = self.mask_to_bbox(self.mask_list[index])
+        image = image[:, :, :3]  # remove alpha channel
+        # print(image.shape)
+        # mask = self.combine_masks(self.mask_list[index])  # for UNet
+        boxes = self.mask_to_bbox(self.mask_list[index])  # xmin, ymin, xmax, ymax
         labels = 1
-        # target = {}
-        # target["id"] = self.id_list[index]
-        # target["boxes"] = boxes
-        # target["mask"] = mask
-        sample = {'image': image, 'boxes': boxes, 'labels': labels, 'id': self.id_list[index]}
+        sample = {'image': image, 'boxes': boxes, 'labels': labels, 'name': self.id_list[index]}
 
         if self.transforms is not None:
             sample = self.transforms(sample)
@@ -117,14 +108,19 @@ if __name__ == "__main__":
     dataset = MyDataset(split='stage1_train', transforms=get_transform())
     trainloader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=True, drop_last=True)
 
-    # image, target = next(iter(dataset))
-    sample = dataset[100]
+    # sample = dataset[100]
+    it = iter(trainloader)
+    sample = next(it)
+
     image = sample["image"]
     boxes = sample["boxes"]
 
+    image = Image.fromarray(image.numpy()[0, 0, :, :])
+    if image.mode != "RGB":
+        image = image.convert("RGB")
     draw = ImageDraw.Draw(image)
     for box in boxes:
         x0, y0, x1, y1 = box
         draw.rectangle([(x0, y0), (x1, y1)], outline=(255, 0, 255))
 
-    image.show(title=target["id"])
+    image.show(title=sample["name"][0])

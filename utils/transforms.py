@@ -90,17 +90,17 @@ class ToTensor(object):
     """Convert ndarrays in sample to Tensors."""
 
     def __call__(self, sample):
-        image, boxes, labels = sample['image'], sample["boxes"], sample["labels"]
+        image, boxes, labels, name = sample['image'], sample["boxes"], sample["labels"], sample["name"]
 
         # swap color axis because
         # numpy image: H x W x C
         # torch image: C X H X W
+
         image = image.transpose((2, 0, 1))
-        image = torch.from_numpy(image)
-        image = image[None, :, :, :]
-        image = image.float()
+        image = torch.from_numpy(image).float()
         return {
             "image": image,
             "boxes": boxes,
-            "labels": labels
+            "labels": labels,
+            "name": name
             }
