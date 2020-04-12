@@ -1,3 +1,4 @@
+import torchvision
 from torchvision.models.detection import FasterRCNN
 from torchvision.models.detection.rpn import AnchorGenerator
 # load a pre-trained model for classification and return

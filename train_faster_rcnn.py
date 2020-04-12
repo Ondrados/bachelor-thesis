@@ -1,12 +1,16 @@
+import os
 import torch
-from faster_rcnn import model
+from torch.utils.data import random_split
+from faster_rcnn.faster_rcnn import model
 
-from dataset import MyDataset
+from dataset import MyDataset, get_transform
+
+from settings import BASE_DIR
 
 models_path = os.path.join(BASE_DIR, "models")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(f"Running on {device}..")
+print(f"Running on {device}...")
 
 model.to(device=device)
 
@@ -21,8 +25,9 @@ trainset, valset = random_split(dataset, [500, 170])
 def train():
     model.train()
     for image, targets in trainset:
+        print(f"Epoch: {epoch}")
+        image = image[None, :, :, :]
         image.to(device=device)
-        targets.to(device=device)
 
         loss = model(image, targets)
         loss_sum = sum(lss for lss in loss.values())
@@ -35,7 +40,7 @@ def evaluate():
     model.eval()
     for image, targets in valset:
         image.to(device=device)
-        targets.to(device=device)
+        image = image[None, :, :, :]
         predictions = model(image)
 
 
