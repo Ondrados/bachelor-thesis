@@ -17,39 +17,8 @@ print(f"Running on {device}...")
 
 model.to(device=device)
 
-params = [p for p in model.parameters() if p.requires_grad]
-optimizer = torch.optim.SGD(params, lr=0.01,
-                            momentum=0.9, weight_decay=0.0005)
-
 dataset = MyDataset(split='stage1_train', transforms=get_transform(train=True))
 trainset, valset = random_split(dataset, [500, 170])
-
-training_loss = []
-
-
-def train():
-    i = 0
-    running_loss = 0.0
-    model.train()
-    for image, targets in trainset:
-        i += 1
-        name = targets[0]["name"]
-        print(f"Epoch: {epoch}, iteration: {i} of {len(trainset)}, image: {name} - train")
-        image = image[None, :, :, :]
-        image.to(device=device)
-        image.cuda()
-
-        loss = model(image, targets)
-        loss_sum = sum(lss for lss in loss.values())
-
-        running_loss += loss_sum
-
-        optimizer.zero_grad()
-        loss_sum.backward()
-        optimizer.step()
-
-    loss = running_loss/len(trainset)
-    training_loss.append(loss)
 
 
 def evaluate():
@@ -64,6 +33,7 @@ def evaluate():
             image = image[None, :, :, :]
             image.to(device=device)
             image.cuda()
+
             prediction = model(image)
 
             image2 = Image.fromarray(image.detach().numpy()[0, 0, :, :])
@@ -77,14 +47,5 @@ def evaluate():
             image2.save(f"/images/{name}-{epoch}.png")
 
 
-for epoch in range(num_epoch):
-    train()
+if __name__ == "__main__":
     evaluate()
-    fig = plt.figure()
-    plt.plot(training_loss, label="training_loss")
-    plt.title("Training loss")
-    plt.xlabel('epoch')
-    plt.ylabel('loss')
-    plt.legend()
-    plt.savefig('plots/training_loss.png')
-    torch.save(model.state_dict(), os.path.join(models_path, "faster_rcnn1.pt"))
