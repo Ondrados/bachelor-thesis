@@ -19,9 +19,9 @@ dataset_path = os.path.join(BASE_DIR, 'data-science-bowl-2018')
 def get_transform(train=False):
     transforms = []
     if train:
-        transforms.append(Rescale((256,256)))
-    transforms.append(ToTensor())
-    return Compose(transforms)
+        transforms.append(my_T.Rescale((256, 256)))
+    transforms.append(my_T.ToTensor())
+    return my_T.Compose(transforms)
 
 
 class MyDataset(Dataset):
