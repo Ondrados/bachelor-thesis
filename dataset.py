@@ -49,19 +49,23 @@ class MyDataset(Dataset):
     def __getitem__(self, index):
         image = np.array(Image.open(self.image_list[index]), dtype=np.uint8)
         image = image[:, :, :3]  # remove alpha channel
-        # print(image.shape)
-        # mask = self.combine_masks(self.mask_list[index])  # for UNet
-        boxes = self.mask_to_bbox(self.mask_list[index])  # xmin, ymin, xmax, ymax
-        labels = 1
-        sample = {'image': image, 'boxes': boxes, 'labels': labels, 'name': self.id_list[index]}
+        boxes, labels = self.mask_to_bbox(self.mask_list[index])
+        targets = [
+            {
+                'boxes': torch.FloatTensor(boxes),
+                'labels': torch.LongTensor(labels),
+                'name': self.id_list[index]
+            }
+        ]
 
         if self.transforms is not None:
-            sample = self.transforms(sample)
+            image, targets = self.transforms(image, targets)
 
-        return sample
+        return image, targets
 
     def mask_to_bbox(self, mask_paths):
         boxes = []
+        labels = []
         for path in mask_paths:
             mask = Image.open(path)
             mask = np.array(mask)
@@ -71,7 +75,8 @@ class MyDataset(Dataset):
             ymin = np.min(pos[0])
             ymax = np.max(pos[0])
             boxes.append([xmin, ymin, xmax, ymax])
-        return boxes
+            labels.append(1)  # every mask is cell
+        return boxes, labels
 
     def combine_masks(self, mask_paths):
         comb_mask = None
@@ -101,25 +106,30 @@ class MyDataset(Dataset):
 
 
 if __name__ == "__main__":
+
+    def my_collate(batch):
+        image = batch[0]
+        target = [item[1] for item in batch]
+        return image, target
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Running on {device}")
 
-    dataset = MyDataset(split='stage1_train', transforms=get_transform())
-    trainloader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=True, drop_last=True)
+    dataset = MyDataset(split='stage1_train', transforms=get_transform(train=True))
+    # trainloader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=True, drop_last=True, collate_fn=my_collate)
+    # it = iter(trainloader)
+    # image, targets = next(it)
 
-    # sample = dataset[100]
-    it = iter(trainloader)
-    sample = next(it)
+    image, targets = dataset[0]
+    image = image[None, :, :, :]
 
-    image = sample["image"]
-    boxes = sample["boxes"]
 
     image = Image.fromarray(image.numpy()[0, 0, :, :])
     if image.mode != "RGB":
         image = image.convert("RGB")
     draw = ImageDraw.Draw(image)
-    for box in boxes:
+    for box in targets[0]["boxes"]:
         x0, y0, x1, y1 = box
         draw.rectangle([(x0, y0), (x1, y1)], outline=(255, 0, 255))
 
-    image.show(title=sample["name"][0])
+    image.show(title=targets[0]["name"][0])
