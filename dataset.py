@@ -52,8 +52,8 @@ class MyDataset(Dataset):
         boxes, labels = self.mask_to_bbox(self.mask_list[index])
         targets = [
             {
-                'boxes': torch.FloatTensor(boxes),
-                'labels': torch.LongTensor(labels),
+                'boxes': torch.cuda.FloatTensor(boxes),
+                'labels': torch.cuda.LongTensor(labels),
                 'name': self.id_list[index]
             }
         ]

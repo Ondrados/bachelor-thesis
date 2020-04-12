@@ -1,5 +1,6 @@
 import os
 import torch
+from PIL import Image, ImageDraw
 from torch.utils.data import random_split
 from matplotlib import pyplot as plt
 from faster_rcnn.faster_rcnn import model
@@ -36,8 +37,7 @@ def train():
         name = targets[0]["name"]
         print(f"Epoch: {epoch}, iteration: {i} of {len(trainset)}, image: {name} - train")
         image = image[None, :, :, :]
-        image.to(device=device)
-        image.cuda()
+        image = image.to(device=device)
 
         loss = model(image, targets)
         loss_sum = sum(lss for lss in loss.values())
@@ -62,11 +62,10 @@ def evaluate():
             name = targets[0]["name"]
             print(f"Epoch: {epoch}/{i} of {len(trainset)}, image {name} - eval")
             image = image[None, :, :, :]
-            image.to(device=device)
-            image.cuda()
+            image = image.to(device=device)
             prediction = model(image)
 
-            image2 = Image.fromarray(image.detach().numpy()[0, 0, :, :])
+            image2 = Image.fromarray(image.cpu().numpy()[0, 0, :, :])
             if image2.mode != "RGB":
                 image2 = image2.convert("RGB")
             draw = ImageDraw.Draw(image2)
@@ -74,7 +73,7 @@ def evaluate():
                 x0, y0, x1, y1 = box
                 draw.rectangle([(x0, y0), (x1, y1)], outline=(255, 0, 255))
 
-            image2.save(f"/images/{name}-{epoch}.png")
+            image2.save(f"faster_rcnn/images/{name}-{epoch}.png")
 
 
 for epoch in range(num_epoch):
@@ -86,5 +85,5 @@ for epoch in range(num_epoch):
     plt.xlabel('epoch')
     plt.ylabel('loss')
     plt.legend()
-    plt.savefig('plots/training_loss.png')
+    plt.savefig('faster_rcnn/plots/training_loss.png')
     torch.save(model.state_dict(), os.path.join(models_path, "faster_rcnn1.pt"))

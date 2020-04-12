@@ -1,5 +1,6 @@
 import os
 import torch
+from PIL import Image, ImageDraw
 from torch.utils.data import random_split
 from matplotlib import pyplot as plt
 from faster_rcnn.faster_rcnn import model
@@ -29,14 +30,13 @@ def evaluate():
         # every 10 images
         if (i % 10) == 0:
             name = targets[0]["name"]
-            print(f"Epoch: {epoch}/{i} of {len(trainset)}, image {name} - eval")
+            print(f"{i} of {len(trainset)}, image {name} - eval")
             image = image[None, :, :, :]
-            image.to(device=device)
-            image.cuda()
+            image = image.to(device=device)
 
             prediction = model(image)
 
-            image2 = Image.fromarray(image.detach().numpy()[0, 0, :, :])
+            image2 = Image.fromarray(image.cpu().numpy()[0, 0, :, :])
             if image2.mode != "RGB":
                 image2 = image2.convert("RGB")
             draw = ImageDraw.Draw(image2)
@@ -44,7 +44,7 @@ def evaluate():
                 x0, y0, x1, y1 = box
                 draw.rectangle([(x0, y0), (x1, y1)], outline=(255, 0, 255))
 
-            image2.save(f"/images/{name}-{epoch}.png")
+            image2.save(f"faster_rcnn/images/{name}.png")
 
 
 if __name__ == "__main__":
