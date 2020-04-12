@@ -18,11 +18,10 @@ dataset_path = os.path.join(BASE_DIR, 'data-science-bowl-2018')
 
 def get_transform(train=False):
     transforms = []
-    transforms.append(my_T.ToTensor())
     if train:
-        # TODO: add rescale to (256, 256)
-        pass
-    return T.Compose(transforms)
+        transforms.append(Rescale((256,256)))
+    transforms.append(ToTensor())
+    return Compose(transforms)
 
 
 class MyDataset(Dataset):

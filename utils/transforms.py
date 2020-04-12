@@ -1,5 +1,6 @@
 import torch
-from torchvision import transforms as T
+import cv2
+import numpy as np
 
 
 class Rescale(object):
@@ -15,8 +16,7 @@ class Rescale(object):
         assert isinstance(output_size, (int, tuple))
         self.output_size = output_size
 
-    def __call__(self, sample):
-        image, landmarks = sample['image'], sample['landmarks']
+    def __call__(self, image, targets):
 
         h, w = image.shape[:2]
         if isinstance(self.output_size, int):
@@ -29,13 +29,24 @@ class Rescale(object):
 
         new_h, new_w = int(new_h), int(new_w)
 
-        img = transform.resize(image, (new_h, new_w))
+        # image = np.resize(image, (new_h, new_w, 3))
+        image = cv2.resize(image, dsize=(new_h, new_w), interpolation=cv2.INTER_CUBIC)
 
         # h and w are swapped for landmarks because for images,
         # x and y axes are axis 1 and 0 respectively
-        landmarks = landmarks * [new_w / w, new_h / h]
+        ratio_height = new_h / h
+        ratio_width = new_w / w
 
-        return {'image': img, 'landmarks': landmarks}
+        xmin, ymin, xmax, ymax = targets[0]["boxes"].unbind(1)
+
+        xmin = xmin * ratio_width
+        xmax = xmax * ratio_width
+        ymin = ymin * ratio_height
+        ymax = ymax * ratio_height
+
+        targets[0]["boxes"] = torch.stack((xmin, ymin, xmax, ymax), dim=1)
+
+        return image, targets
 
 
 class RandomCrop(object):
@@ -71,26 +82,10 @@ class RandomCrop(object):
         return {'image': image, 'landmarks': landmarks}
 
 
-# class ToTensor(T.ToTensor):
-#     """Convert a ``PIL Image`` or ``numpy.ndarray`` to tensor.
-#
-#     Converts a PIL Image or numpy.ndarray (H x W x C) in the range
-#     [0, 255] to a torch.FloatTensor of shape (C x H x W) in the range [0.0, 1.0]
-#     if the PIL Image belongs to one of the modes (L, LA, P, I, F, RGB, YCbCr, RGBA, CMYK, 1)
-#     or if the numpy.ndarray has dtype = np.uint8
-#
-#     In the other cases, tensors are returned without scaling.
-#     """
-#
-#     def __call__(self, target):
-#         return super().__call__(target["image"])
-
-
 class ToTensor(object):
     """Convert ndarrays in sample to Tensors."""
 
-    def __call__(self, sample):
-        image, boxes, labels, name = sample['image'], sample["boxes"], sample["labels"], sample["name"]
+    def __call__(self, image, targets):
 
         # swap color axis because
         # numpy image: H x W x C
@@ -98,9 +93,26 @@ class ToTensor(object):
 
         image = image.transpose((2, 0, 1))
         image = torch.from_numpy(image).float()
-        return {
-            "image": image,
-            "boxes": boxes,
-            "labels": labels,
-            "name": name
-            }
+        return image, targets
+
+
+class Compose(object):
+    """Composes several transforms together.
+
+    Args:
+        transforms (list of ``Transform`` objects): list of transforms to compose.
+
+    Example:
+        >>> transforms.Compose([
+        >>>     transforms.CenterCrop(10),
+        >>>     transforms.ToTensor(),
+        >>> ])
+    """
+
+    def __init__(self, transforms):
+        self.transforms = transforms
+
+    def __call__(self, image, targets):
+        for t in self.transforms:
+            image, targets = t(image, targets)
+        return image, targets
