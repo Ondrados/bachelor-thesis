@@ -25,3 +25,5 @@
 # System
 .DS_store
 ._.DS_store
+
+/.ssh
