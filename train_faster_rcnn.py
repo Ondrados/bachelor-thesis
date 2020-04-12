@@ -7,6 +7,8 @@ from dataset import MyDataset, get_transform
 
 from settings import BASE_DIR
 
+num_epoch = 30
+
 models_path = os.path.join(BASE_DIR, "models")
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -23,9 +25,12 @@ trainset, valset = random_split(dataset, [500, 170])
 
 
 def train():
+    i = 0
     model.train()
     for image, targets in trainset:
-        print(f"Epoch: {epoch}")
+        i += 1
+        name = targets[0]["name"]
+        print(f"Epoch: {epoch}, iteration: {i} of {len(trainset)}, image: {name} - train")
         image = image[None, :, :, :]
         image.to(device=device)
 
@@ -35,16 +40,24 @@ def train():
         loss_sum.backward()
         optimizer.step()
 
+        # TODO: add loss save
+
 
 def evaluate():
+    i = 0
     model.eval()
     for image, targets in valset:
+        i += 1
+        name = targets[0]["name"]
+        print(f"Epoch: {epoch}/{i} of {len(trainset)}, image {name} - eval")
         image.to(device=device)
         image = image[None, :, :, :]
         predictions = model(image)
 
+        # TODO: add image save
 
-for epoch in range(50):
+
+for epoch in range(num_epoch):
     train()
     evaluate()
     torch.save(model.state_dict(), os.path.join(models_path, "faster_rcnn1.pt"))
