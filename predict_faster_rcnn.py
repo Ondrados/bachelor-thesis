@@ -17,13 +17,14 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Running on {device}...")
 
 model.load_state_dict(torch.load(os.path.join(models_path, "faster_rcnn1.pt"), map_location=device))
-
+model.to(device=device)
 dataset = MyDataset(split='stage1_train', transforms=get_transform(train=True))
 trainset, valset = random_split(dataset, [500, 170])
 
 
 def evaluate():
     i = 0
+    model.eval()
     for image, targets in valset:
         i += 1
         # every 10 images
