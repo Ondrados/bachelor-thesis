@@ -66,10 +66,10 @@ def train():
         print(f"Epoch: {epoch}, iteration: {i} of {len(trainset)}, loss: {loss_sum}, image: {name} - train")
 
     training_loss_sum.append(running_loss_sum / len(trainset))
-    rpn_cls_loss.append(running_loss_cls1 / len(transformed_dataset))
-    roi_cls_loss.append(running_loss_cls2 / len(transformed_dataset))
-    rpn_reg_loss.append(running_loss_reg1 / len(transformed_dataset))
-    roi_reg_loss.append(running_loss_reg2 / len(transformed_dataset))
+    rpn_cls_loss.append(running_loss_cls1 / len(trainset))
+    roi_cls_loss.append(running_loss_cls2 / len(trainset))
+    rpn_reg_loss.append(running_loss_reg1 / len(trainset))
+    roi_reg_loss.append(running_loss_reg2 / len(trainset))
 
 
 def evaluate():
