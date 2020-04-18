@@ -20,7 +20,7 @@ class Rescale(object):
 
         h, w = image.shape[:2]
         if (h, w) == self.output_size:
-            print("same")
+            return image, targets
         if isinstance(self.output_size, int):
             if h > w:
                 new_h, new_w = self.output_size * h / w, self.output_size
