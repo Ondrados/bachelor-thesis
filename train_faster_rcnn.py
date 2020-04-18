@@ -13,7 +13,7 @@ num_epoch = 30
 
 models_path = os.path.join(BASE_DIR, "models")
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(f"Running on {device}...")
 
 model.to(device=device)
@@ -38,10 +38,14 @@ def train():
         print(f"Epoch: {epoch}, iteration: {i} of {len(trainset)}, image: {name} - train")
         image = image[None, :, :, :]
         image = image.to(device=device)
-
+        #targets = [{
+        #        "boxes": targets[0]["boxes"].to(device=device),
+        #        "labels": targets[0]["labels"].to(device=device)
+        #        }]
         loss = model(image, targets)
-        loss_sum = sum(lss for lss in loss.values())
-
+        print(loss)
+        loss_sum = sum(lss for lss in loss.values())  #TODO: check this .items()
+        print(loss_sum)
         running_loss += loss_sum
 
         optimizer.zero_grad()
@@ -86,4 +90,4 @@ for epoch in range(num_epoch):
     plt.ylabel('loss')
     plt.legend()
     plt.savefig('faster_rcnn/plots/training_loss.png')
-    torch.save(model.state_dict(), os.path.join(models_path, "faster_rcnn1.pt"))
+    torch.save(model.state_dict(), os.path.join(models_path, "faster_rcnn2.pt"))
