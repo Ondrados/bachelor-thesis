@@ -23,9 +23,9 @@ trainset, valset = random_split(dataset, [500, 170])
 
 def evaluate():
     i = 0
+    model.eval()
     for image, targets in valset:
         i += 1
-        model.eval()
         # every 10 images
         if (i % 10) == 0:
             name = targets[0]["name"]
