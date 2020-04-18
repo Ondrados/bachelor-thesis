@@ -25,7 +25,7 @@ optimizer = torch.optim.SGD(params, lr=0.01, momentum=0.9, weight_decay=0.0005)
 dataset = MyDataset(split=split, transforms=get_transform(train=True))
 trainset, evalset = random_split(dataset, [660, 10])  # this evalset is only for training progress demonstration
 
-training_loss = []
+training_loss_sum = []
 rpn_cls_loss = []
 roi_cls_loss = []
 rpn_reg_loss = []
