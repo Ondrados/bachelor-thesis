@@ -74,8 +74,9 @@ class MyDataset(Dataset):
             xmax = np.max(pos[1])
             ymin = np.min(pos[0])
             ymax = np.max(pos[0])
-            boxes.append([xmin, ymin, xmax, ymax])
-            labels.append(1)  # every mask is cell
+            if xmin != xmax and ymin != ymax:
+                boxes.append([xmin, ymin, xmax, ymax])
+                labels.append(1)  # every mask is cell
         return boxes, labels
 
     def combine_masks(self, mask_paths):
