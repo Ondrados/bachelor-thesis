@@ -38,12 +38,11 @@ def train():
         print(f"Epoch: {epoch}, iteration: {i} of {len(trainset)}, image: {name} - train")
         image = image[None, :, :, :]
         image = image.to(device=device)
-        #targets = [{
-        #        "boxes": targets[0]["boxes"].to(device=device),
-        #        "labels": targets[0]["labels"].to(device=device)
-        #        }]
+        targets = [{
+                "boxes": targets[0]["boxes"].to(device=device),
+                "labels": targets[0]["labels"].to(device=device)
+                }]
         loss = model(image, targets)
-        print(loss)
         loss_sum = sum(lss for lss in loss.values())  #TODO: check this .items()
         print(loss_sum)
         running_loss += loss_sum
