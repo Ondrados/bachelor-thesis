@@ -4,11 +4,13 @@
 /models
 
 # images
-/images
-/imgs
+images/
+imgs/
 
 # jupyter
 /.ipynb_checkpoints
+
+/zuz
 
 # dataset
 /data-science-bowl-2018
