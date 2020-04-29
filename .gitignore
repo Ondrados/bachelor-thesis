@@ -10,7 +10,7 @@ imgs/
 # jupyter
 .ipynb_checkpoints/
 
-zuz/
+/zuz/
 
 # dataset
 /data-science-bowl-2018
