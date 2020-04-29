@@ -8,7 +8,7 @@ images/
 imgs/
 
 # jupyter
-/.ipynb_checkpoints
+.ipynb_checkpoints/
 
 zuz/
 
