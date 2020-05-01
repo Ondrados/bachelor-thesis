@@ -20,7 +20,8 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 model.to(device=device)
 
 params = [p for p in model.parameters() if p.requires_grad]
-optimizer = torch.optim.SGD(params, lr=0.01, momentum=0.9, weight_decay=0.0005)
+# optimizer = torch.optim.SGD(params, lr=0.01, momentum=0.9, weight_decay=0.0005)
+optimizer = torch.optim.Adam(params, lr=0.001, weight_decay=0)
 
 dataset = MyDataset(split=split, transforms=get_transform(train=True))
 trainset, evalset = random_split(dataset, [660, 10])  # this evalset is only for training progress demonstration
