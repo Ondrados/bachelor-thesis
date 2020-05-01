@@ -106,11 +106,6 @@ class MyDataset(Dataset):
 
 if __name__ == "__main__":
 
-    # def my_collate(batch):
-    #     image = batch[0]
-    #     target = [item[1] for item in batch]
-    #     return image, target
-
     def my_collate(batch):
         data = [item[0] for item in batch]
         target = [item[1] for item in batch]
