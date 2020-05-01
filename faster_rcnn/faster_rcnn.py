@@ -14,7 +14,7 @@ backbone.out_channels = 1280
 # ratios. We have a Tuple[Tuple[int]] because each feature
 # map could potentially have different sizes and
 # aspect ratios
-anchor_generator = AnchorGenerator(sizes=((8, 16, 32, 64, 128),),
+anchor_generator = AnchorGenerator(sizes=((4, 8, 16, 32, 64),),
                                 aspect_ratios=((0.5, 1.0, 2.0),))
 
 # let's define what are the feature maps that we will
