@@ -18,7 +18,7 @@ def my_collate(batch):
 
 split = "stage1_train"
 num_epoch = 30
-attempt = 3
+attempt = 4
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -26,13 +26,13 @@ model.to(device=device)
 
 params = [p for p in model.parameters() if p.requires_grad]
 # optimizer = torch.optim.SGD(params, lr=0.01, momentum=0.9, weight_decay=0.0005)
-optimizer = torch.optim.Adam(params, lr=0.001, weight_decay=0)
+optimizer = torch.optim.Adam(params, lr=0.0005, weight_decay=0)
 
 dataset = MyDataset(split=split, transforms=get_transform(train=True))
 trainset, evalset = random_split(dataset, [660, 10])  # this evalset is only for training progress demonstration
 
 train_loader = DataLoader(trainset, batch_size=1, num_workers=0, shuffle=True, collate_fn=my_collate)
-eval_loader = DataLoader(evalset, batch_size=1, num_workers=0, shuffle=True, collate_fn=my_collate)
+eval_loader = DataLoader(evalset, batch_size=1, num_workers=0, shuffle=False, collate_fn=my_collate)
 
 training_loss_sum = []
 rpn_cls_loss = []
@@ -122,12 +122,12 @@ def plot_losses():
 
 
 if __name__ == "__main__":
-    print(f"Running on {device} ...")
+    print(f"Running on {device}")
     print(f"This is {attempt}. attempt")
     for epoch in range(num_epoch):
         train()
         evaluate()
         plot_losses()
         torch.save(model.state_dict(), os.path.join(models_path, f"faster_rcnn_{attempt}.pt"))
-    print("Training is done!")
+    print("Done!")
 
