@@ -1,7 +1,7 @@
 import os
 import torch
 from PIL import Image, ImageDraw
-from torch.utils.data import random_split
+from torch.utils.data import random_split, DataLoader
 from matplotlib import pyplot as plt
 from faster_rcnn.faster_rcnn import model
 
@@ -10,6 +10,11 @@ from dataset import MyDataset, get_transform
 from settings import BASE_DIR
 
 models_path = os.path.join(BASE_DIR, "models")
+
+def my_collate(batch):
+    data = [item[0] for item in batch]
+    target = [item[1] for item in batch]
+    return data, target
 
 split = "stage1_train"
 num_epoch = 30
@@ -26,6 +31,9 @@ optimizer = torch.optim.Adam(params, lr=0.001, weight_decay=0)
 dataset = MyDataset(split=split, transforms=get_transform(train=True))
 trainset, evalset = random_split(dataset, [660, 10])  # this evalset is only for training progress demonstration
 
+train_loader = DataLoader(trainset, batch_size=1, num_workers=0, shuffle=True, collate_fn=my_collate)
+eval_loader = DataLoader(evalset, batch_size=1, num_workers=0, shuffle=True, collate_fn=my_collate)
+
 training_loss_sum = []
 rpn_cls_loss = []
 roi_cls_loss = []
@@ -34,7 +42,6 @@ roi_reg_loss = []
 
 
 def train():
-    i = 0
     running_loss_sum = 0
     running_loss_cls1 = 0
     running_loss_reg1 = 0
@@ -42,15 +49,14 @@ def train():
     running_loss_reg2 = 0
 
     model.train()
-    for image, targets in trainset:
-        i += 1
+    for i, (image, targets) in enumerate(train_loader):
         name = targets[0]["name"]
-        image = image[None, :, :, :]
-        image = image.to(device=device)
+        image = image[0].to(device=device)
         targets = [{
-                "boxes": targets[0]["boxes"].to(device=device),
-                "labels": targets[0]["labels"].to(device=device)
-                }]
+            "boxes": targets[0]["boxes"].to(device=device),
+            "labels": targets[0]["labels"].to(device=device),
+            "name": name
+        }]
         loss = model(image, targets)
         loss_sum = sum(lss for lss in loss.values())
 
@@ -64,7 +70,7 @@ def train():
         loss_sum.backward()
         optimizer.step()
 
-        print(f"Epoch: {epoch}, iteration: {i} of {len(trainset)}, loss: {loss_sum}, image: {name} - train")
+        print(f"Epoch: {epoch}, iteration: {i} of {len(trainset)}, loss: {loss_sum}, image: {name}")
 
     training_loss_sum.append(running_loss_sum / len(trainset))
     rpn_cls_loss.append(running_loss_cls1 / len(trainset))
@@ -74,13 +80,15 @@ def train():
 
 
 def evaluate():
-    i = 0
     model.eval()
-    for image, targets in evalset:
-        i += 1
+    for i, (image, targets) in enumerate(eval_loader):
         name = targets[0]["name"]
-        image = image[None, :, :, :]
-        image = image.to(device=device)
+        image = image[0].to(device=device)
+        targets = [{
+            "boxes": targets[0]["boxes"].to(device=device),
+            "labels": targets[0]["labels"].to(device=device),
+            "name": name
+        }]
 
         predictions = model(image)
 
@@ -93,7 +101,7 @@ def evaluate():
             draw.rectangle([(x0, y0), (x1, y1)], outline=(255, 0, 255))
         image_copy.save(f"faster_rcnn/images_{attempt}/{name}-{epoch}.png")
 
-        print(f"Epoch: {epoch}, iteration: {i} of {len(evalset)}, image: {name} - eval")
+        print(f"Epoch: {epoch}, iteration: {i} of {len(evalset)}, image: {name}")
 
 
 def plot_losses():
@@ -110,6 +118,7 @@ def plot_losses():
     plt.ylabel('loss')
     plt.legend()
     plt.savefig(f"faster_rcnn/plots/training_loss_{attempt}.png")
+    plt.close("all")
 
 
 if __name__ == "__main__":
