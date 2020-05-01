@@ -50,13 +50,11 @@ class MyDataset(Dataset):
         image = np.array(Image.open(self.image_list[index]), dtype=np.uint8)
         image = image[:, :, :3]  # remove alpha channel
         boxes, labels = self.mask_to_bbox(self.mask_list[index])
-        targets = [
-            {
-                'boxes': torch.FloatTensor(boxes),
-                'labels': torch.LongTensor(labels),
-                'name': self.id_list[index]
-            }
-        ]
+        targets = {
+            'boxes': torch.FloatTensor(boxes),
+            'labels': torch.LongTensor(labels),
+            'name': self.id_list[index]
+        }
 
         if self.transforms is not None:
             image, targets = self.transforms(image, targets)
@@ -108,28 +106,29 @@ class MyDataset(Dataset):
 
 if __name__ == "__main__":
 
+    # def my_collate(batch):
+    #     image = batch[0]
+    #     target = [item[1] for item in batch]
+    #     return image, target
+
     def my_collate(batch):
-        image = batch[0]
+        data = [item[0] for item in batch]
         target = [item[1] for item in batch]
-        return image, target
+        return data, target
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Running on {device}")
 
     dataset = MyDataset(split='stage1_train', transforms=get_transform(train=True))
-    # trainloader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=True, drop_last=True, collate_fn=my_collate)
-    # it = iter(trainloader)
-    # image, targets = next(it)
-
-    image, targets = dataset[0]
-    image = image[None, :, :, :]
-    image = image.to(device=device)
+    trainloader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=True, collate_fn=my_collate)
+    it = iter(trainloader)
+    image, targets = next(it)
+    image = image[0].to(device=device)
     targets = [{
         "boxes": targets[0]["boxes"].to(device=device),
         "labels": targets[0]["labels"].to(device=device),
         "name": targets[0]["name"]
     }]
-
 
     image = Image.fromarray(image.numpy()[0, 0, :, :])
     if image.mode != "RGB":
@@ -139,4 +138,4 @@ if __name__ == "__main__":
         x0, y0, x1, y1 = box
         draw.rectangle([(x0, y0), (x1, y1)], outline=(255, 0, 255))
 
-    image.show(title=targets[0]["name"][0])
+    image.show(title=targets[0]["name"])

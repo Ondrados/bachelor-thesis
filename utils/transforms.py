@@ -39,14 +39,14 @@ class Rescale(object):
         ratio_height = new_h / h
         ratio_width = new_w / w
 
-        xmin, ymin, xmax, ymax = targets[0]["boxes"].unbind(1)
+        xmin, ymin, xmax, ymax = targets["boxes"].unbind(1)
 
         xmin = xmin * ratio_width
         xmax = xmax * ratio_width
         ymin = ymin * ratio_height
         ymax = ymax * ratio_height
 
-        targets[0]["boxes"] = torch.stack((xmin, ymin, xmax, ymax), dim=1)
+        targets["boxes"] = torch.stack((xmin, ymin, xmax, ymax), dim=1)
 
         return image, targets
 
@@ -94,7 +94,7 @@ class ToTensor(object):
         # torch image: C X H X W
 
         image = image.transpose((2, 0, 1))
-        image = torch.from_numpy(image).float()
+        image = torch.from_numpy(image[None, :, :, :]).float()
         return image, targets
 
 
