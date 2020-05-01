@@ -11,22 +11,37 @@ from settings import BASE_DIR
 
 models_path = os.path.join(BASE_DIR, "models")
 
+
 def my_collate(batch):
     data = [item[0] for item in batch]
     target = [item[1] for item in batch]
     return data, target
 
+
 split = "stage1_train"
 num_epoch = 30
-attempt = 4
+attempt = 6
+
+trained_epoch = 0
+load_from_attempt = 6
+use_pretrained = False
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 model.to(device=device)
 
 params = [p for p in model.parameters() if p.requires_grad]
-optimizer = torch.optim.SGD(params, lr=0.004, momentum=0.9, weight_decay=0.0005)
+optimizer = torch.optim.SGD(params, lr=0.005, momentum=0.9, weight_decay=0.0005)
 # optimizer = torch.optim.Adam(params, lr=0.0005, weight_decay=0)
+lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer,
+                                                   step_size=3,
+                                                   gamma=0.1)
+
+if use_pretrained:
+    state = torch.load(os.path.join(models_path, f"faster_rcnn_{load_from_attempt}.pt"))
+    model.load_state_dict(state['state_dict'])
+    optimizer.load_state_dict(state['optimizer'])
+    trained_epoch = state['epoch']
 
 dataset = MyDataset(split=split, transforms=get_transform(train=True))
 trainset, evalset = random_split(dataset, [660, 10])  # this evalset is only for training progress demonstration
@@ -70,7 +85,9 @@ def train():
         loss_sum.backward()
         optimizer.step()
 
+
         print(f"Epoch: {epoch}, iteration: {i} of {len(trainset)}, loss: {loss_sum}, image: {name}")
+    lr_scheduler.step(epoch)
 
     training_loss_sum.append(running_loss_sum / len(trainset))
     rpn_cls_loss.append(running_loss_cls1 / len(trainset))
@@ -124,10 +141,15 @@ def plot_losses():
 if __name__ == "__main__":
     print(f"Running on {device}")
     print(f"This is {attempt}. attempt")
-    for epoch in range(num_epoch):
+    for epoch in range(trained_epoch, trained_epoch + num_epoch):
         train()
         evaluate()
         plot_losses()
-        torch.save(model.state_dict(), os.path.join(models_path, f"faster_rcnn_{attempt}.pt"))
+        state = {
+            'epoch': epoch,
+            'state_dict': model.state_dict(),
+            'optimizer': optimizer.state_dict()
+        }
+        torch.save(state, os.path.join(models_path, f"faster_rcnn_{attempt}.pt"))
     print("Done!")
 
