@@ -123,6 +123,12 @@ if __name__ == "__main__":
 
     image, targets = dataset[0]
     image = image[None, :, :, :]
+    image = image.to(device=device)
+    targets = [{
+        "boxes": targets[0]["boxes"].to(device=device),
+        "labels": targets[0]["labels"].to(device=device),
+        "name": targets[0]["name"]
+    }]
 
 
     image = Image.fromarray(image.numpy()[0, 0, :, :])
