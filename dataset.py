@@ -50,13 +50,11 @@ class MyDataset(Dataset):
         image = np.array(Image.open(self.image_list[index]), dtype=np.uint8)
         image = image[:, :, :3]  # remove alpha channel
         boxes, labels = self.mask_to_bbox(self.mask_list[index])
-        targets = \
-            {
-                'boxes': torch.FloatTensor(boxes),
-                'labels': torch.LongTensor(labels),
-                'name': self.id_list[index]
-            }
-
+        targets = {
+            'boxes': torch.FloatTensor(boxes),
+            'labels': torch.LongTensor(labels),
+            'name': self.id_list[index]
+        }
 
         if self.transforms is not None:
             image, targets = self.transforms(image, targets)
@@ -125,20 +123,12 @@ if __name__ == "__main__":
     trainloader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=True, collate_fn=my_collate)
     it = iter(trainloader)
     image, targets = next(it)
-    print(image)
-    print(targets)
-    print("-----")
-    image, targets = dataset[1]
-    name = targets["name"]
-    # image = image[None, :, :, :]
-    image = image.to(device=device)
+    image = image[0].to(device=device)
     targets = [{
-        "boxes": targets["boxes"].to(device=device),
-        "labels": targets["labels"].to(device=device),
-        "name": targets["name"]
+        "boxes": targets[0]["boxes"].to(device=device),
+        "labels": targets[0]["labels"].to(device=device),
+        "name": targets[0]["name"]
     }]
-    print(image)
-    print(targets)
 
     image = Image.fromarray(image.numpy()[0, 0, :, :])
     if image.mode != "RGB":
@@ -148,4 +138,4 @@ if __name__ == "__main__":
         x0, y0, x1, y1 = box
         draw.rectangle([(x0, y0), (x1, y1)], outline=(255, 0, 255))
 
-    image.show(title=name)
+    image.show(title=targets[0]["name"])
