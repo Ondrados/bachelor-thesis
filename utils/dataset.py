@@ -117,7 +117,7 @@ if __name__ == "__main__":
 
     if yolo:
         dataset = MyDataset(split='stage1_train',
-                            transforms=get_transform(train=True, rescale_size=(412, 412), yolo=True))
+                            transforms=get_transform(train=True, rescale_size=(416, 416), yolo=True))
         trainloader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=True, collate_fn=my_collate)
         it = iter(trainloader)
         image, targets = next(it)
