@@ -49,10 +49,10 @@ class Rescale(object):
 
         if self.yolo:
             cls = torch.zeros(len(targets["boxes"]))
+            xcnt = (xmin + ((xmax - xmin) / 2)) / new_w
+            ycnt = (ymin + ((ymax - ymin) / 2)) / new_h
             width = (xmax - xmin) / new_w
             height = (ymax - ymin) / new_h
-            xcnt = (xmin + (width / 2)) / new_w
-            ycnt = (ymin + (height / 2)) / new_h
             targets["boxes"] = torch.stack((cls, xcnt, ycnt, width, height), dim=1)
         else:
             targets["boxes"] = torch.stack((xmin, ymin, xmax, ymax), dim=1)
