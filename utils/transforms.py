@@ -48,7 +48,7 @@ class Rescale(object):
         ymax = ymax * ratio_height
 
         if self.yolo:
-            cls = torch.zeros(len(targets["boxes"]))
+            cls = torch.zeros(len(targets["boxes"]), dtype=torch.float)
             xcnt = (xmin + ((xmax - xmin) / 2)) / new_w
             ycnt = (ymin + ((ymax - ymin) / 2)) / new_h
             width = (xmax - xmin) / new_w
