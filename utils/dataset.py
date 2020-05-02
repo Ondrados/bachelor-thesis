@@ -15,9 +15,9 @@ dataset_path = os.path.join(BASE_DIR, 'data-science-bowl-2018')
 
 
 def my_collate(batch):
-    data = [item[0] for item in batch]
-    target = [item[1] for item in batch]
-    return data, target
+    image = [item[0] for item in batch]
+    targets = [item[1] for item in batch]
+    return image, targets
 
 
 def get_transform(train=False, rescale_size=(256, 256)):
