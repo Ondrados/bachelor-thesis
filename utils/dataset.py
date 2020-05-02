@@ -127,7 +127,6 @@ if __name__ == "__main__":
             "labels": targets[0]["labels"].to(device=device),
             "name": targets[0]["name"]
         }]
-        print(image.shape)
         _, _, h, w = image.shape
         image = Image.fromarray(image.numpy()[0, 0, :, :])
 
