@@ -3,11 +3,11 @@ import torch
 from PIL import Image, ImageDraw
 from torch.utils.data import random_split, DataLoader
 from matplotlib import pyplot as plt
-from faster_rcnn.faster_rcnn import model
+from faster_rcnn.models import model
 
 from dataset import MyDataset, get_transform
 
-from settings import BASE_DIR
+from conf.settings import BASE_DIR
 
 models_path = os.path.join(BASE_DIR, "models")
 

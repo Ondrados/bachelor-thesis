@@ -5,12 +5,10 @@ import torch
 from PIL import Image, ImageDraw
 from skimage import draw
 from skimage.io import imread
-from matplotlib import pyplot as plt
 from scipy.ndimage.filters import gaussian_filter
 from torch.utils.data import Dataset, DataLoader
-from torchvision import transforms as T
 
-from settings import BASE_DIR
+from conf.settings import BASE_DIR
 from utils import transforms as my_T
 
 dataset_path = os.path.join(BASE_DIR, 'data-science-bowl-2018')
