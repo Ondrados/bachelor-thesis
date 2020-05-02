@@ -5,15 +5,9 @@ from torch.utils.data import random_split, DataLoader
 from matplotlib import pyplot as plt
 from faster_rcnn.models import model
 
-from utils.dataset import MyDataset, get_transform
+from utils.dataset import MyDataset, get_transform, my_collate
 
 from conf.settings import BASE_DIR
-
-
-def my_collate(batch):
-    data = [item[0] for item in batch]
-    target = [item[1] for item in batch]
-    return data, target
 
 
 def train():

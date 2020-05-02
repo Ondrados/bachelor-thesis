@@ -14,6 +14,12 @@ from utils import transforms as my_T
 dataset_path = os.path.join(BASE_DIR, 'data-science-bowl-2018')
 
 
+def my_collate(batch):
+    data = [item[0] for item in batch]
+    target = [item[1] for item in batch]
+    return data, target
+
+
 def get_transform(train=False, rescale_size=(256, 256)):
     transforms = []
     if train:
@@ -103,11 +109,6 @@ class MyDataset(Dataset):
 
 
 if __name__ == "__main__":
-
-    def my_collate(batch):
-        data = [item[0] for item in batch]
-        target = [item[1] for item in batch]
-        return data, target
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Running on {device}")
