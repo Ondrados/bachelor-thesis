@@ -2,16 +2,13 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader
-from dataset import MyDataset
+from utils.dataset import MyDataset
 from unet import UNet
-from skimage.exposure import histogram
-from skimage.feature import peak_local_max, match_template
-from skimage.morphology import local_maxima, h_maxima, extrema
+from skimage.feature import peak_local_max
+from skimage.morphology import extrema
 
 from skimage.measure import label
-from skimage import data
 from skimage import color
-from skimage import exposure
 
 dataset = MyDataset(split="stage1_train",path_to_data = '/Users/ondra/Dev/Personal/cnn-cells/data-science-bowl-2018')
 

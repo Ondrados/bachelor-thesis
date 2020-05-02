@@ -1,15 +1,12 @@
 
 # pick one image from the test set
-import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.autograd import Variable
-import matplotlib
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader, random_split
 
-from dataset import MyDataset
+from utils.dataset import MyDataset
 from unet import UNet
 
 

@@ -5,42 +5,15 @@ from torch.utils.data import random_split, DataLoader
 from matplotlib import pyplot as plt
 from faster_rcnn.models import model
 
-from dataset import MyDataset, get_transform
+from utils.dataset import MyDataset, get_transform
 
 from conf.settings import BASE_DIR
-
-models_path = os.path.join(BASE_DIR, "models")
 
 
 def my_collate(batch):
     data = [item[0] for item in batch]
     target = [item[1] for item in batch]
     return data, target
-
-
-split = "stage1_train"
-num_epoch = 30
-attempt = 6
-
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
-model.to(device=device)
-
-params = [p for p in model.parameters() if p.requires_grad]
-optimizer = torch.optim.SGD(params, lr=0.005, momentum=0.9, weight_decay=0.0005)
-# optimizer = torch.optim.Adam(params, lr=0.0005, weight_decay=0)
-
-dataset = MyDataset(split=split, transforms=get_transform(train=True))
-trainset, evalset = random_split(dataset, [660, 10])  # this evalset is only for training progress demonstration
-
-train_loader = DataLoader(trainset, batch_size=1, num_workers=0, shuffle=True, collate_fn=my_collate)
-eval_loader = DataLoader(evalset, batch_size=1, num_workers=0, shuffle=False, collate_fn=my_collate)
-
-training_loss_sum = []
-rpn_cls_loss = []
-roi_cls_loss = []
-rpn_reg_loss = []
-roi_reg_loss = []
 
 
 def train():
@@ -96,7 +69,7 @@ def evaluate():
         for box, score in zip(predictions[0]["boxes"], predictions[0]["scores"]):
             x0, y0, x1, y1 = box
             draw.rectangle([(x0, y0), (x1, y1)], outline=(255, 0, 255))
-        image_copy.save(f"faster_rcnn/images_{attempt}/{name}-{epoch}.png")
+        image_copy.save(os.path.join(images_path, f"faster_rcnn/{attempt}/images/{name}-{epoch}.png"))
 
         print(f"Epoch: {epoch}, iteration: {i} of {len(evalset)}, image: {name}")
 
@@ -114,13 +87,45 @@ def plot_losses():
     plt.xlabel('epoch')
     plt.ylabel('loss')
     plt.legend()
-    plt.savefig(f"faster_rcnn/plots/training_loss_{attempt}.png")
-    plt.close("all")
+    plt.savefig(os.path.join(images_path, f"faster_rcnn/{attempt}/plots/training_loss_{attempt}.png"))
+    plt.close()
 
 
 if __name__ == "__main__":
+    models_path = os.path.join(BASE_DIR, "models")
+    images_path = os.path.join(BASE_DIR, "images")
+
+    attempt = 6
+    num_epoch = 30
+
+    os.makedirs(models_path, exist_ok=True)
+    os.makedirs(os.path.join(images_path, f"faster_rcnn/{attempt}/images"), exist_ok=True)
+    os.makedirs(os.path.join(images_path, f"faster_rcnn/{attempt}/plots"), exist_ok=True)
+
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
     print(f"Running on {device}")
     print(f"This is {attempt}. attempt")
+
+    model.to(device=device)
+
+    params = [p for p in model.parameters() if p.requires_grad]
+    optimizer = torch.optim.SGD(params, lr=0.005, momentum=0.9, weight_decay=0.0005)
+    # optimizer = torch.optim.Adam(params, lr=0.0005, weight_decay=0)
+
+    split = "stage1_train"
+    dataset = MyDataset(split=split, transforms=get_transform(train=True, rescale_size=(256, 256)))
+    trainset, evalset = random_split(dataset, [660, 10])  # this evalset is only for training progress demonstration
+
+    train_loader = DataLoader(trainset, batch_size=1, num_workers=0, shuffle=True, collate_fn=my_collate)
+    eval_loader = DataLoader(evalset, batch_size=1, num_workers=0, shuffle=False, collate_fn=my_collate)
+
+    training_loss_sum = []
+    rpn_cls_loss = []
+    roi_cls_loss = []
+    rpn_reg_loss = []
+    roi_reg_loss = []
+
     for epoch in range(num_epoch):
         train()
         evaluate()

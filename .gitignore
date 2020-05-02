@@ -1,11 +1,17 @@
 #
 # Project gitignore
 #
+
+# python
+__pycache__/
+
+# models
 /models
+*.pt
+*.pth
 
 # images
 images/
-imgs/
 *.png
 
 # jupyter

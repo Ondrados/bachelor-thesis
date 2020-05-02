@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw
 from torch.utils.data import random_split
 from faster_rcnn.models import model
 
-from dataset import MyDataset, get_transform
+from utils.dataset import MyDataset, get_transform
 
 from conf.settings import BASE_DIR
 

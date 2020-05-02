@@ -14,10 +14,10 @@ from utils import transforms as my_T
 dataset_path = os.path.join(BASE_DIR, 'data-science-bowl-2018')
 
 
-def get_transform(train=False):
+def get_transform(train=False, rescale_size=(256, 256)):
     transforms = []
     if train:
-        transforms.append(my_T.Rescale((256, 256)))
+        transforms.append(my_T.Rescale(rescale_size))
     transforms.append(my_T.ToTensor())
     return my_T.Compose(transforms)
 
