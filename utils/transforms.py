@@ -12,9 +12,10 @@ class Rescale(object):
             to output_size keeping aspect ratio the same.
     """
 
-    def __init__(self, output_size):
+    def __init__(self, output_size, yolo):
         assert isinstance(output_size, (int, tuple))
         self.output_size = output_size
+        self.yolo = yolo
 
     def __call__(self, image, targets):
 
@@ -46,7 +47,15 @@ class Rescale(object):
         ymin = ymin * ratio_height
         ymax = ymax * ratio_height
 
-        targets["boxes"] = torch.stack((xmin, ymin, xmax, ymax), dim=1)
+        if self.yolo:
+            cls = torch.zeros(len(targets["boxes"]))
+            width = (xmax - xmin) / new_w
+            height = (ymax - ymin) / new_h
+            xcnt = (xmin + (width / 2)) / new_w
+            ycnt = (ymin + (height / 2)) / new_h
+            targets["boxes"] = torch.stack((cls, xcnt, ycnt, width, height), dim=1)
+        else:
+            targets["boxes"] = torch.stack((xmin, ymin, xmax, ymax), dim=1)
 
         return image, targets
 

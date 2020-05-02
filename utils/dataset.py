@@ -20,10 +20,10 @@ def my_collate(batch):
     return image, targets
 
 
-def get_transform(train=False, rescale_size=(256, 256)):
+def get_transform(train=False, rescale_size=(256, 256), yolo=False):
     transforms = []
     if train:
-        transforms.append(my_T.Rescale(rescale_size))
+        transforms.append(my_T.Rescale(rescale_size, yolo))
     transforms.append(my_T.ToTensor())
     return my_T.Compose(transforms)
 
@@ -113,23 +113,58 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Running on {device}")
 
-    dataset = MyDataset(split='stage1_train', transforms=get_transform(train=True))
-    trainloader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=True, collate_fn=my_collate)
-    it = iter(trainloader)
-    image, targets = next(it)
-    image = image[0].to(device=device)
-    targets = [{
-        "boxes": targets[0]["boxes"].to(device=device),
-        "labels": targets[0]["labels"].to(device=device),
-        "name": targets[0]["name"]
-    }]
+    yolo = True
 
-    image = Image.fromarray(image.numpy()[0, 0, :, :])
-    if image.mode != "RGB":
-        image = image.convert("RGB")
-    draw = ImageDraw.Draw(image)
-    for box in targets[0]["boxes"]:
-        x0, y0, x1, y1 = box
-        draw.rectangle([(x0, y0), (x1, y1)], outline=(255, 0, 255))
+    if yolo:
+        dataset = MyDataset(split='stage1_train',
+                            transforms=get_transform(train=True, rescale_size=(412, 412), yolo=True))
+        trainloader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=True, collate_fn=my_collate)
+        it = iter(trainloader)
+        image, targets = next(it)
+        image = image[0].to(device=device)
+        targets = [{
+            "boxes": targets[0]["boxes"].to(device=device),
+            "labels": targets[0]["labels"].to(device=device),
+            "name": targets[0]["name"]
+        }]
+        print(image.shape)
+        _, _, h, w = image.shape
+        image = Image.fromarray(image.numpy()[0, 0, :, :])
 
-    image.show(title=targets[0]["name"])
+        if image.mode != "RGB":
+            image = image.convert("RGB")
+        draw = ImageDraw.Draw(image)
+        for box in targets[0]["boxes"]:
+            cls, xcnt, ycnt, width, height = box
+            width = width * w
+            height = height * h
+            xcnt = xcnt * w
+            ycnt = ycnt * h
+            x0 = xcnt - (width / 2)
+            x1 = xcnt + (width / 2)
+            y0 = ycnt - (height / 2)
+            y1 = ycnt + (height / 2)
+            draw.rectangle([(x0, y0), (x1, y1)], outline=(255, 0, 255))
+
+        image.show(title=targets[0]["name"])
+    else:
+        dataset = MyDataset(split='stage1_train', transforms=get_transform(train=True))
+        trainloader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=True, collate_fn=my_collate)
+        it = iter(trainloader)
+        image, targets = next(it)
+        image = image[0].to(device=device)
+        targets = [{
+            "boxes": targets[0]["boxes"].to(device=device),
+            "labels": targets[0]["labels"].to(device=device),
+            "name": targets[0]["name"]
+        }]
+
+        image = Image.fromarray(image.numpy()[0, 0, :, :])
+        if image.mode != "RGB":
+            image = image.convert("RGB")
+        draw = ImageDraw.Draw(image)
+        for box in targets[0]["boxes"]:
+            x0, y0, x1, y1 = box
+            draw.rectangle([(x0, y0), (x1, y1)], outline=(255, 0, 255))
+
+        image.show(title=targets[0]["name"])
