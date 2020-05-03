@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 
-from yolo_v3.utils.utils import parse_model_config, build_targets, to_cpu
+from utils import parse_model_config, build_targets, to_cpu
 
 
 def create_modules(module_defs):
