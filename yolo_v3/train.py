@@ -86,7 +86,7 @@ if __name__ == "__main__":
     print(f"Running on {device}")
     print(f"This is {attempt}. attempt")
 
-    model = Darknet("config/yolov3-custom.cfg").to(device)
+    model = Darknet(os.path.join(BASE_DIR, "yolo_v3/config/yolov3-custom.cfg")).to(device)
     model.apply(weights_init_normal)
     # model.load_darknet_weights("weights/yolov3.weights")
 
