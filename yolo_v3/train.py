@@ -4,8 +4,8 @@ import numpy as np
 from PIL import Image, ImageDraw
 from torch.utils.data import random_split, DataLoader
 from matplotlib import pyplot as plt
-from yolo_v3.models import Darknet
-from yolo_v3.utils import weights_init_normal, non_max_suppression, xywh2xyxy
+from models import Darknet
+from utils import weights_init_normal, non_max_suppression, xywh2xyxy
 
 from dataset import MyDataset, get_transform, my_collate
 
