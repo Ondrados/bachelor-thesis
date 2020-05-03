@@ -1,10 +1,11 @@
 import os
 import torch
+import numpy as np
 from PIL import Image, ImageDraw
 from torch.utils.data import random_split, DataLoader
 from matplotlib import pyplot as plt
 from yolo_v3.models import Darknet
-from yolo_v3.utils.utils import weights_init_normal
+from yolo_v3.utils.utils import weights_init_normal, non_max_suppression, xywh2xyxy
 
 from utils.dataset import MyDataset, get_transform, my_collate
 
@@ -41,13 +42,16 @@ def evaluate():
         name = targets[0]["name"]
         image = image[0].to(device=device)
 
-        predictions = model(image)
+        outputs = model(image)
+        outputs = non_max_suppression(outputs, conf_thres=0.5)
+
+        boxes = outputs[0][:, 0:4]
 
         image_copy = Image.fromarray(image.cpu().numpy()[0, 0, :, :])
         if image_copy.mode != "RGB":
             image_copy = image_copy.convert("RGB")
         draw = ImageDraw.Draw(image_copy)
-        for box, score in zip(predictions[0]["boxes"], predictions[0]["scores"]):
+        for box in boxes:
             x0, y0, x1, y1 = box
             draw.rectangle([(x0, y0), (x1, y1)], outline=(255, 0, 255))
         image_copy.save(os.path.join(images_path, f"yolo_v3/{attempt}/images/{name}-{epoch}.png"))
@@ -71,7 +75,7 @@ if __name__ == "__main__":
     images_path = os.path.join(BASE_DIR, "images")
 
     attempt = 1
-    num_epoch = 30
+    num_epoch = 10
 
     os.makedirs(models_path, exist_ok=True)
     os.makedirs(os.path.join(images_path, f"yolo_v3/{attempt}/images"), exist_ok=True)
@@ -84,7 +88,7 @@ if __name__ == "__main__":
 
     model = Darknet("config/yolov3-custom.cfg").to(device)
     model.apply(weights_init_normal)
-    model.load_darknet_weights("weights/yolov3.weights")
+    # model.load_darknet_weights("weights/yolov3.weights")
 
     params = model.parameters()
     optimizer = torch.optim.Adam(params)
@@ -100,8 +104,7 @@ if __name__ == "__main__":
 
     for epoch in range(num_epoch):
         train()
-        # evaluate()
+        evaluate()
         plot_losses()
         torch.save(model.state_dict(), os.path.join(models_path, f"yolo_v4_{attempt}.pt"))
     print("Done!")
-
