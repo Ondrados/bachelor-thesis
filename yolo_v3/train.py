@@ -106,5 +106,5 @@ if __name__ == "__main__":
         train()
         evaluate()
         plot_losses()
-        torch.save(model.state_dict(), os.path.join(models_path, f"yolo_v4_{attempt}.pt"))
+        torch.save(model.state_dict(), os.path.join(models_path, f"yolo_v3_{attempt}.pt"))
     print("Done!")
