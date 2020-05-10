@@ -5,7 +5,7 @@ from torch.utils.data import random_split, DataLoader
 from matplotlib import pyplot as plt
 from faster_rcnn.models import model
 
-from dataset import MyDataset, get_transforms, my_collate
+from data_utils import MyDataset, get_transforms, my_collate
 
 from conf.settings import BASE_DIR
 

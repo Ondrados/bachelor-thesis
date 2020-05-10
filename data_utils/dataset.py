@@ -9,7 +9,7 @@ from scipy.ndimage.filters import gaussian_filter
 from torch.utils.data import Dataset, DataLoader
 
 from conf.settings import BASE_DIR
-from dataset import transforms as my_T
+from data_utils import transforms as my_T
 
 dataset_path = os.path.join(BASE_DIR, 'data-science-bowl-2018')
 

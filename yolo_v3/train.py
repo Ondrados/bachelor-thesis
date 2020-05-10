@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 from models import Darknet
 from utils import weights_init_normal, non_max_suppression, xywh2xyxy
 
-from dataset import MyDataset, get_transforms, my_collate
+from data_utils import MyDataset, get_transforms, my_collate
 
 from conf.settings import BASE_DIR
 

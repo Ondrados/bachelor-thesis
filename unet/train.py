@@ -4,7 +4,7 @@ import torch.optim as optim
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader, random_split
 
-from dataset import MyDataset
+from data_utils import MyDataset
 from unet import UNet
 
 

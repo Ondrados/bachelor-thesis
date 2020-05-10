@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader, random_split
 from models import Darknet
 from utils import non_max_suppression, xywh2xyxy
 
-from dataset import MyTestDataset, get_test_transforms, my_collate
+from data_utils import MyTestDataset, get_test_transforms, my_collate
 
 from conf.settings import BASE_DIR
 
