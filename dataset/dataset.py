@@ -20,7 +20,7 @@ def my_collate(batch):
     return image, targets
 
 
-def get_transform(train=False, rescale_size=(256, 256), yolo=False):
+def get_transforms(train=False, rescale_size=(256, 256), yolo=False):
     transforms = []
     if train:
         transforms.append(my_T.Rescale(rescale_size, yolo))
@@ -149,11 +149,11 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Running on {device}")
 
-    yolo = True
+    yolo = False
 
     if yolo:
         dataset = MyDataset(split='stage1_train',
-                            transforms=get_transform(train=True, rescale_size=(416, 416), yolo=True))
+                            transforms=get_transforms(train=True, rescale_size=(416, 416), yolo=True))
         trainloader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=True, collate_fn=my_collate)
         it = iter(trainloader)
         image, targets = next(it)
@@ -183,7 +183,7 @@ if __name__ == "__main__":
 
         image.show(title=targets[0]["name"])
     else:
-        dataset = MyDataset(split='stage1_train', transforms=get_transform(train=True))
+        dataset = MyDataset(split='stage1_train', transforms=get_transforms(train=True))
         trainloader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=True, collate_fn=my_collate)
         it = iter(trainloader)
         image, targets = next(it)

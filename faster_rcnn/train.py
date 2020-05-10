@@ -5,7 +5,7 @@ from torch.utils.data import random_split, DataLoader
 from matplotlib import pyplot as plt
 from faster_rcnn.models import model
 
-from dataset import MyDataset, get_transform, my_collate
+from dataset import MyDataset, get_transforms, my_collate
 
 from conf.settings import BASE_DIR
 
@@ -108,7 +108,7 @@ if __name__ == "__main__":
     # optimizer = torch.optim.Adam(params, lr=0.0005, weight_decay=0)
 
     split = "stage1_train"
-    dataset = MyDataset(split=split, transforms=get_transform(train=True, rescale_size=(256, 256)))
+    dataset = MyDataset(split=split, transforms=get_transforms(train=True, rescale_size=(256, 256)))
     trainset, evalset = random_split(dataset, [660, 10])  # this evalset is only for training progress demonstration
 
     train_loader = DataLoader(trainset, batch_size=1, num_workers=0, shuffle=True, collate_fn=my_collate)

@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw
 from torch.utils.data import random_split
 from faster_rcnn.models import model
 
-from dataset import MyDataset, get_transform
+from dataset import MyDataset, get_transforms
 
 from conf.settings import BASE_DIR
 
@@ -16,7 +16,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(f"Running on {device}...")
 
 model.load_state_dict(torch.load(os.path.join(models_path, "faster_rcnn1.pt"), map_location=device))
-dataset = MyDataset(split='stage1_train', transforms=get_transform(train=True))
+dataset = MyDataset(split='stage1_train', transforms=get_transforms(train=True))
 trainset, valset = random_split(dataset, [500, 170])
 
 
