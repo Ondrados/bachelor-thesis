@@ -12,7 +12,7 @@ class Rescale(object):
             to output_size keeping aspect ratio the same.
     """
 
-    def __init__(self, output_size, yolo):
+    def __init__(self, output_size, yolo=False):
         assert isinstance(output_size, (int, tuple))
         self.output_size = output_size
         self.yolo = yolo
@@ -56,6 +56,40 @@ class Rescale(object):
             targets["boxes"] = torch.stack((cls, xcnt, ycnt, width, height), dim=1)
         else:
             targets["boxes"] = torch.stack((xmin, ymin, xmax, ymax), dim=1)
+
+        return image, targets
+
+
+class TestRescale(object):
+    """Rescale the image in a sample to a given size.
+
+    Args:
+        output_size (tuple or int): Desired output size. If tuple, output is
+            matched to output_size. If int, smaller of image edges is matched
+            to output_size keeping aspect ratio the same.
+    """
+
+    def __init__(self, output_size):
+        assert isinstance(output_size, (int, tuple))
+        self.output_size = output_size
+
+    def __call__(self, image, targets):
+
+        h, w = image.shape[:2]
+        if (h, w) == self.output_size:
+            return image
+        if isinstance(self.output_size, int):
+            if h > w:
+                new_h, new_w = self.output_size * h / w, self.output_size
+            else:
+                new_h, new_w = self.output_size, self.output_size * w / h
+        else:
+            new_h, new_w = self.output_size
+
+        new_h, new_w = int(new_h), int(new_w)
+
+        # image = np.resize(image, (new_h, new_w, 3))
+        image = cv2.resize(image, dsize=(new_h, new_w), interpolation=cv2.INTER_CUBIC)
 
         return image, targets
 

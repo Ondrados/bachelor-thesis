@@ -108,6 +108,42 @@ class MyDataset(Dataset):
         return Image.fromarray(blurred)
 
 
+def get_test_transforms(rescale_size=(416, 416)):
+    transforms = [my_T.TestRescale(rescale_size), my_T.ToTensor()]
+    return my_T.Compose(transforms)
+
+
+class MyTestDataset(Dataset):
+    def __init__(self, transforms=get_test_transforms(), split="stage1_test", path=dataset_path):
+        self.split = split
+        self.path = path + '/' + split
+
+        self.transforms = transforms
+
+        self.path_id_list = glob.glob(os.path.join(self.path, '*'))
+        self.id_list = []
+        self.image_list = []
+
+        for path_id in self.path_id_list:
+            images = glob.glob(path_id + '/images/*png')
+            self.image_list.extend(images)
+            self.id_list.append(os.path.basename(path_id))
+
+    def __len__(self):
+        return len(self.path_id_list)
+
+    def __getitem__(self, index):
+        image = np.array(Image.open(self.image_list[index]), dtype=np.uint8)
+        image = image[:, :, :3]  # remove alpha channel
+        targets = {
+            'name': self.id_list[index]
+        }
+        if self.transforms:
+            image, targets = self.transforms(image, targets)
+
+        return image, targets
+
+
 if __name__ == "__main__":
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
