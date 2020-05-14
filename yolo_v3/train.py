@@ -44,7 +44,7 @@ def evaluate():
         image = image[0].to(device=device)
         boxes = targets[0]["boxes"].to(device=device)
 
-        with torch.no_grad:
+        with torch.no_grad():
             loss, outputs = model(image, boxes)
             loss_item = loss.item()
 
