@@ -116,7 +116,7 @@ if __name__ == "__main__":
         evaluate()
         plot_losses()
         if (epoch % 10) == 0:
-            torch.save(model.state_dict(), os.path.join(models_path, f"yolo_v3_{attempt}_check.pt"))
+            torch.save(model.state_dict(), os.path.join(models_path, f"yolo_v3_{attempt}_{epoch}.pt"))
         else:
             torch.save(model.state_dict(), os.path.join(models_path, f"yolo_v3_{attempt}.pt"))
     print("Done!")
