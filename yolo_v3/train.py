@@ -74,8 +74,15 @@ def plot_losses():
     plt.xlabel('epoch')
     plt.ylabel('loss')
     plt.legend()
-    plt.savefig(os.path.join(images_path, f"yolo_v3/{attempt}/plots/training_loss_{attempt}.png"))
+    plt.savefig(os.path.join(images_path, f"yolo_v3/{attempt}/plots/training_eval_loss_{attempt}.png"))
     plt.close()
+    plt.figure(figsize=(12, 8), dpi=200)
+    plt.plot(training_loss, 'r-', label="training_loss", )
+    plt.title("Training loss")
+    plt.xlabel('epoch')
+    plt.ylabel('loss')
+    plt.legend()
+    plt.savefig(os.path.join(images_path, f"yolo_v3/{attempt}/plots/training_loss_{attempt}.png"))
 
 
 if __name__ == "__main__":
