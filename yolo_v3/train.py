@@ -83,6 +83,7 @@ def plot_losses():
     plt.ylabel('loss')
     plt.legend()
     plt.savefig(os.path.join(images_path, f"yolo_v3/{attempt}/plots/training_loss_{attempt}.png"))
+    plt.close()
 
 
 if __name__ == "__main__":
