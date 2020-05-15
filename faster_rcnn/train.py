@@ -90,7 +90,7 @@ if __name__ == "__main__":
     images_path = os.path.join(BASE_DIR, "images")
 
     attempt = 6
-    num_epoch = 30
+    num_epoch = 50
 
     os.makedirs(models_path, exist_ok=True)
     os.makedirs(os.path.join(images_path, f"faster_rcnn/{attempt}/images"), exist_ok=True)
@@ -124,6 +124,9 @@ if __name__ == "__main__":
         train()
         evaluate()
         plot_losses()
-        torch.save(model.state_dict(), os.path.join(models_path, f"faster_rcnn_{attempt}.pt"))
-    print("Done!")
 
+        if (epoch % 10) == 0:
+            torch.save(model.state_dict(), os.path.join(models_path, f"faster_rcnn_{attempt}_{epoch}.pt"))
+        else:
+            torch.save(model.state_dict(), os.path.join(models_path, f"faster_rcnn_{attempt}.pt"))
+    print("Done!")
