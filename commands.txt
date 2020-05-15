@@ -5,4 +5,4 @@ kaggle competitions download -c data-science-bowl-2018
 
 eval "$(ssh-agent -s)"
 
-export PYTHONPATH="${PYTHONPATH}:/home/ubmi/Documents/cnn-cells/cnn-cells
+export PYTHONPATH="${PYTHONPATH}:/home/ubmi/Documents/cnn-cells/cnn-cells"

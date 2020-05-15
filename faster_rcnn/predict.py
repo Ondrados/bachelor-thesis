@@ -1,50 +1,46 @@
 import os
 import torch
 from PIL import Image, ImageDraw
-from torch.utils.data import random_split
-from faster_rcnn.models import model
+from torch.utils.data import random_split, DataLoader
 
-from data_utils import MyDataset, get_transforms
+from data_utils import MyTestDataset, get_test_transforms
 
 from conf.settings import BASE_DIR
 
-num_epoch = 30
-
-models_path = os.path.join(BASE_DIR, "models")
-
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-print(f"Running on {device}...")
-
-model.load_state_dict(torch.load(os.path.join(models_path, "faster_rcnn1.pt"), map_location=device))
-dataset = MyDataset(split='stage1_train', transforms=get_transforms(train=True))
-trainset, valset = random_split(dataset, [500, 170])
-
 
 def evaluate():
-    i = 0
     model.eval()
-    for image, targets in valset:
-        i += 1
-        # every 10 images
-        if (i % 10) == 0:
-            name = targets[0]["name"]
-            print(f"{i} of {len(valset)}, image {name} - eval")
-            image = image[None, :, :, :]
-            image = image.to(device=device)
+    for i, (image, targets) in enumerate(test_loader):
+        # name = targets[0]["name"]
+        image = image[0].to(device=device)
 
-            prediction = model(image)
+        predictions = model(image)
+        # TODO: add non_max_supression
 
-            image2 = Image.fromarray(image.cpu().numpy()[0, 0, :, :])
-            if image2.mode != "RGB":
-                image2 = image2.convert("RGB")
-            draw = ImageDraw.Draw(image2)
-            for box, score in zip(prediction[0]["boxes"], prediction[0]["scores"]):
-                x0, y0, x1, y1 = box
-                draw.rectangle([(x0, y0), (x1, y1)], outline=(255, 0, 255))
-            #image2.show()
-            image2.save(f"faster_rcnn/images/{name}.png")
+        image_copy = Image.fromarray(image.cpu().numpy()[0, 0, :, :])
+        if image_copy.mode != "RGB":
+            image_copy = image_copy.convert("RGB")
+        draw = ImageDraw.Draw(image_copy)
+        for box, score in zip(predictions[0]["boxes"], predictions[0]["scores"]):
+            x0, y0, x1, y1 = box
+            draw.rectangle([(x0, y0), (x1, y1)], outline=(255, 0, 255))
+        # image_copy.save(os.path.join(images_path, f"faster_rcnn/{attempt}/images/{name}-{epoch}.png"))
+        image_copy.show()
+        if i == 5:
             break
 
 
 if __name__ == "__main__":
+    from models import model
+
+    models_path = os.path.join(BASE_DIR, "models")
+
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print(f"Running on {device}...")
+
+    model.load_state_dict(torch.load(os.path.join(models_path, "faster_rcnn_6_10.pt"), map_location=device))
+
+    dataset = MyTestDataset(split='stage1_test', transforms=get_test_transforms())
+
+    test_loader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=True)
     evaluate()
