@@ -3,7 +3,7 @@ import torch
 from PIL import Image, ImageDraw
 from torch.utils.data import random_split, DataLoader
 from matplotlib import pyplot as plt
-from faster_rcnn.models import model
+from models import model
 
 from data_utils import MyDataset, get_transforms, my_collate
 
