@@ -28,8 +28,8 @@ if __name__ == "__main__":
         image = image[0].to(device=device)
         name = targets["name"]
 
-        predictions = model(image)
-        # TODO: add non_max_supression
+        with torch.no_grad():
+            predictions = model(image)
 
         image_copy = Image.fromarray(image.cpu().numpy()[0, 0, :, :])
         if image_copy.mode != "RGB":
@@ -38,7 +38,5 @@ if __name__ == "__main__":
         for box, score in zip(predictions[0]["boxes"], predictions[0]["scores"]):
             x0, y0, x1, y1 = box
             draw.rectangle([(x0, y0), (x1, y1)], outline=(255, 0, 255))
-        # image_copy.save(os.path.join(images_path, f"faster_rcnn/{attempt}/images/{name}-{epoch}.png"))
         image_copy.show()
-        if i == 5:
-            break
+        break

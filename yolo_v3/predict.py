@@ -31,7 +31,9 @@ if __name__ == "__main__":
         image = image[0].to(device=device)
         name = targets["name"]
 
-        outputs = model(image)
+        with torch.no_grad():
+            outputs = model(image)
+
         outputs = non_max_suppression(outputs, conf_thres=0.5)
 
         boxes = outputs[0][:, 0:4]
