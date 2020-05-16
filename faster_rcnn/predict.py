@@ -8,11 +8,25 @@ from data_utils import MyTestDataset, get_test_transforms
 from conf.settings import BASE_DIR
 
 
-def evaluate():
+models_path = os.path.join(BASE_DIR, "models")
+images_path = os.path.join(BASE_DIR, "images")
+
+if __name__ == "__main__":
+    from models import model
+
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print(f"Running on {device}...")
+
+    model.load_state_dict(torch.load(os.path.join(models_path, "faster_rcnn_6.pt"), map_location=device))
+
+    dataset = MyTestDataset(split='stage1_test', transforms=get_test_transforms(rescale_size=(256, 256)))
+
+    test_loader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=True)
+
     model.eval()
     for i, (image, targets) in enumerate(test_loader):
-        # name = targets[0]["name"]
         image = image[0].to(device=device)
+        name = targets["name"]
 
         predictions = model(image)
         # TODO: add non_max_supression
@@ -28,19 +42,3 @@ def evaluate():
         image_copy.show()
         if i == 5:
             break
-
-
-if __name__ == "__main__":
-    from models import model
-
-    models_path = os.path.join(BASE_DIR, "models")
-
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    print(f"Running on {device}...")
-
-    model.load_state_dict(torch.load(os.path.join(models_path, "faster_rcnn_6_10.pt"), map_location=device))
-
-    dataset = MyTestDataset(split='stage1_test', transforms=get_test_transforms(rescale_size=(256, 256)))
-
-    test_loader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=True)
-    evaluate()
