@@ -5,10 +5,9 @@ from PIL import Image, ImageDraw
 from matplotlib import pyplot as plt
 from torch.utils.data import DataLoader, random_split
 
+from data_utils import MyTestDataset, get_test_transforms
 from models import Darknet
-from utils import non_max_suppression, xywh2xyxy
-
-from data_utils import MyTestDataset, get_test_transforms, my_collate
+from utils import non_max_suppression
 
 from conf.settings import BASE_DIR
 
@@ -21,7 +20,7 @@ if __name__ == "__main__":
     print(f"Running on {device}...")
 
     model = Darknet(os.path.join(BASE_DIR, "yolo_v3/config/yolov3-custom.cfg")).to(device)
-    model.load_state_dict(torch.load(os.path.join(models_path, "yolo_v3_2.pt"), map_location=device))
+    model.load_state_dict(torch.load(os.path.join(models_path, "yolo_v3_3_20_check.pt"), map_location=device))
 
     dataset = MyTestDataset(split='stage1_test', transforms=get_test_transforms(rescale_size=(416, 416)))
 
