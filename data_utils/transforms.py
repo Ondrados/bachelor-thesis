@@ -1,6 +1,7 @@
 import torch
 import cv2
 import numpy as np
+import torchvision.transforms as T
 
 
 class Rescale(object):
@@ -93,6 +94,38 @@ class TestRescale(object):
         # image = np.resize(image, (new_h, new_w, 3))
         image = cv2.resize(image, dsize=(new_h, new_w), interpolation=cv2.INTER_CUBIC)
 
+        return image, targets
+
+
+class Normalize(object):
+    """Normalize a tensor image with mean and standard deviation.
+    Given mean: ``(M1,...,Mn)`` and std: ``(S1,..,Sn)`` for ``n`` channels, this transform
+    will normalize each channel of the input ``torch.*Tensor`` i.e.
+    ``input[channel] = (input[channel] - mean[channel]) / std[channel]``
+
+    .. note::
+        This transform acts out of place, i.e., it does not mutates the input tensor.
+
+    Args:
+        mean (sequence): Sequence of means for each channel.
+        std (sequence): Sequence of standard deviations for each channel.
+        inplace(bool,optional): Bool to make this operation in-place.
+
+    """
+
+    def __init__(self, norm_type=cv2.NORM_MINMAX):
+        self.norm_type = norm_type
+
+    def __call__(self, image, targets):
+        """
+        Args:
+            tensor (Tensor): Tensor image of size (C, H, W) to be normalized.
+
+        Returns:
+            Tensor: Normalized Tensor image.
+        """
+        # image = super().__call__(tensor)
+        image = cv2.normalize(image, None, 0, 255, self.norm_type)
         return image, targets
 
 

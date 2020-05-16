@@ -5,6 +5,7 @@ import torch
 from PIL import Image, ImageDraw
 from skimage import draw
 from skimage.io import imread
+from matplotlib import pyplot as plt
 from scipy.ndimage.filters import gaussian_filter
 from torch.utils.data import Dataset, DataLoader
 
@@ -24,6 +25,7 @@ def get_transforms(train=False, rescale_size=(256, 256), yolo=False):
     transforms = []
     if train:
         transforms.append(my_T.Rescale(rescale_size, yolo))
+        transforms.append(my_T.Normalize())
     transforms.append(my_T.ToTensor())
     return my_T.Compose(transforms)
 
@@ -109,7 +111,7 @@ class MyDataset(Dataset):
 
 
 def get_test_transforms(rescale_size=(416, 416)):
-    transforms = [my_T.TestRescale(rescale_size), my_T.ToTensor()]
+    transforms = [my_T.TestRescale(rescale_size), my_T.Normalize(), my_T.ToTensor()]
     return my_T.Compose(transforms)
 
 
@@ -202,4 +204,6 @@ if __name__ == "__main__":
             x0, y0, x1, y1 = box
             draw.rectangle([(x0, y0), (x1, y1)], outline=(255, 0, 255))
 
-        image.show(title=targets[0]["name"])
+        # image.show(title=targets[0]["name"])
+        plt.imshow(image)
+        plt.show()
