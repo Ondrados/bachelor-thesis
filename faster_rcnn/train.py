@@ -134,7 +134,7 @@ if __name__ == "__main__":
     roi_reg_loss = []
 
     for epoch in range(num_epoch):
-        # train()
+        train()
         evaluate()
         plot_losses()
 
