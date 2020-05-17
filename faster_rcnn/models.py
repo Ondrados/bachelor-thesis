@@ -34,7 +34,4 @@ model = FasterRCNN(
                 num_classes=2,
                 rpn_anchor_generator=anchor_generator,
                 box_roi_pool=roi_pooler,
-                min_size=256,
-                max_size=256,
-                box_detections_per_img=1000,
                   )
