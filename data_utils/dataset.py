@@ -8,6 +8,7 @@ from skimage.io import imread
 from matplotlib import pyplot as plt
 from scipy.ndimage.filters import gaussian_filter
 from torch.utils.data import Dataset, DataLoader
+from torchvision import transforms as T
 
 from conf.settings import BASE_DIR
 from data_utils import transforms as my_T
@@ -31,11 +32,12 @@ def get_transforms(train=False, rescale_size=(256, 256), yolo=False):
 
 
 class MyDataset(Dataset):
-    def __init__(self, transforms=None, split="stage1_train", path=dataset_path):
+    def __init__(self, transforms=None, split="stage1_train", path=dataset_path, model=None):
         self.split = split
         self.path = path + '/' + split
 
         self.transforms = transforms
+        self.model = model
 
         self.path_id_list = glob.glob(os.path.join(self.path, '*'))
         self.id_list = []
@@ -52,7 +54,19 @@ class MyDataset(Dataset):
     def __len__(self):
         return len(self.path_id_list)
 
-    def __getitem__(self, index):
+    def __getitem__(self, index, unet=False):
+        if self.model == "unet":
+            image = Image.open(self.image_list[index])
+            mask = self.combine_masks(self.mask_list[index])
+            self.transforms = T.Compose([
+                T.CenterCrop(256),
+                T.Grayscale(num_output_channels=1),
+                T.ToTensor()
+            ])
+            image = self.transforms(image)
+            mask = self.transforms(mask)
+            return image, mask
+
         image = np.array(Image.open(self.image_list[index]), dtype=np.uint8)
         image = image[:, :, :3]  # remove alpha channel
         boxes, labels = self.mask_to_bbox(self.mask_list[index])
@@ -85,8 +99,12 @@ class MyDataset(Dataset):
 
     def combine_masks(self, mask_paths):
         comb_mask = None
+        comb_mask_def = None
         for path in mask_paths:
-            # mask = Image.open(path)
+            mask = Image.open(path)
+            if comb_mask_def is None:
+                comb_mask_def = np.zeros_like(mask)
+            comb_mask_def += mask
             mask = imread(path)
             count = (mask == 255).sum()
             y, x = np.argwhere(mask == 255).sum(0) / count
@@ -151,9 +169,9 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Running on {device}")
 
-    yolo = False
+    model = "faster"
 
-    if yolo:
+    if model == "yolo":
         dataset = MyDataset(split='stage1_train',
                             transforms=get_transforms(train=True, rescale_size=(416, 416), yolo=True))
         trainloader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=True, collate_fn=my_collate)
@@ -184,7 +202,7 @@ if __name__ == "__main__":
             draw.rectangle([(x0, y0), (x1, y1)], outline=(255, 0, 255))
 
         image.show(title=targets[0]["name"])
-    else:
+    elif model == "faster":
         dataset = MyDataset(split='stage1_train', transforms=get_transforms(train=True))
         trainloader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=True, collate_fn=my_collate)
         it = iter(trainloader)
@@ -206,4 +224,17 @@ if __name__ == "__main__":
 
         # image.show(title=targets[0]["name"])
         plt.imshow(image)
+        plt.show()
+    else:
+        dataset = MyDataset(split='stage1_train', model=model)
+
+        inputs, masks = next(iter(dataset))
+        fig = plt.figure()
+        fig.add_subplot(1, 2, 1)
+        plt.title("Obraz")
+        plt.imshow(inputs[0,:,:].detach().cpu().numpy(), cmap="gray")
+        fig.add_subplot(1, 2, 2)
+        plt.imshow(masks[0,:,:].detach().cpu().numpy(), cmap="gray")
+        plt.title("Maska")
+
         plt.show()
