@@ -11,7 +11,7 @@ from unet import UNet
 
 
 batch = 8
-dataset = MyDataset(split="stage1_train")
+dataset = MyDataset(split="stage1_train",)
 trainset, valset = random_split(dataset, [500, 170])
 
 train_loader = DataLoader(

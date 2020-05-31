@@ -55,6 +55,7 @@ class MyDataset(Dataset):
         return len(self.path_id_list)
 
     def __getitem__(self, index, unet=False):
+        # TODO: make full unet integration
         if self.model == "unet":
             image = Image.open(self.image_list[index])
             mask = self.combine_masks(self.mask_list[index])
@@ -134,11 +135,12 @@ def get_test_transforms(rescale_size=(416, 416)):
 
 
 class MyTestDataset(Dataset):
-    def __init__(self, transforms=get_test_transforms(), split="stage1_test", path=dataset_path):
+    def __init__(self, transforms=get_test_transforms(), split="stage1_test", path=dataset_path, model=None):
         self.split = split
         self.path = path + '/' + split
 
         self.transforms = transforms
+        self.model = model
 
         self.path_id_list = glob.glob(os.path.join(self.path, '*'))
         self.id_list = []
@@ -153,6 +155,16 @@ class MyTestDataset(Dataset):
         return len(self.path_id_list)
 
     def __getitem__(self, index):
+        # TODO: make full unet integration
+        if self.model == "unet":
+            image = Image.open(self.image_list[index])
+            self.transforms2 = T.Compose([
+                T.CenterCrop(256),
+                T.Grayscale(num_output_channels=1),
+                T.ToTensor()
+            ])
+            image = self.transforms2(image)
+            return image
         image = np.array(Image.open(self.image_list[index]), dtype=np.uint8)
         image = image[:, :, :3]  # remove alpha channel
         targets = {
@@ -204,7 +216,7 @@ if __name__ == "__main__":
         image.show(title=targets[0]["name"])
     elif model == "faster":
         dataset = MyDataset(split='stage1_train', transforms=get_transforms(train=True))
-        trainloader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=True, collate_fn=my_collate)
+        trainloader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=False, collate_fn=my_collate)
         it = iter(trainloader)
         image, targets = next(it)
         image = image[0].to(device=device)

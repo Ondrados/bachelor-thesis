@@ -90,7 +90,7 @@ if __name__ == "__main__":
     models_path = os.path.join(BASE_DIR, "models")
     images_path = os.path.join(BASE_DIR, "images")
 
-    attempt = 3
+    attempt = 4
     num_epoch = 100
 
     os.makedirs(models_path, exist_ok=True)
