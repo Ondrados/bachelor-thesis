@@ -60,13 +60,14 @@ class MyDataset(Dataset):
             image = Image.open(self.image_list[index])
             mask = self.combine_masks(self.mask_list[index])
             self.transforms = T.Compose([
-                T.CenterCrop(256),
+                T.Resize((256, 256)),
                 T.Grayscale(num_output_channels=1),
                 T.ToTensor()
             ])
             image = self.transforms(image)
             mask = self.transforms(mask)
-            return image, mask
+            name = self.id_list[index]
+            return image, mask, name
 
         image = np.array(Image.open(self.image_list[index]), dtype=np.uint8)
         image = image[:, :, :3]  # remove alpha channel
@@ -181,7 +182,7 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Running on {device}")
 
-    model = "faster"
+    model = "unet"
 
     if model == "yolo":
         dataset = MyDataset(split='stage1_train',
@@ -245,8 +246,9 @@ if __name__ == "__main__":
         fig.add_subplot(1, 2, 1)
         plt.title("Obraz")
         plt.imshow(inputs[0,:,:].detach().cpu().numpy(), cmap="gray")
+        # plt.imshow(masks[0, :, :].detach().cpu().numpy(), cmap="jet", alpha=0.3,)
         fig.add_subplot(1, 2, 2)
-        plt.imshow(masks[0,:,:].detach().cpu().numpy(), cmap="gray")
-        plt.title("Maska")
+        plt.imshow(masks[0,:,:].detach().cpu().numpy(), cmap="jet")
+        plt.title("Heat mapa")
 
         plt.show()
