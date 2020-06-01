@@ -9,7 +9,7 @@ from skimage.feature import peak_local_max
 from skimage.morphology import extrema
 from skimage.measure import label
 from skimage import color
-from models import UNet
+from unet.models import UNet
 
 from data_utils import MyDataset
 
@@ -20,6 +20,7 @@ images_path = os.path.join(BASE_DIR, "images")
 
 
 def evaluate(model, eval_loader, dist_threshold=3):
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     runnning_dice_vec = 0
     runnning_prec_vec = 0
     runnning_rec_vec = 0

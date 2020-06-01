@@ -5,7 +5,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 from torch.utils.data import random_split, DataLoader
 from matplotlib import pyplot as plt
-from models import model
+from faster_rcnn.models import model
 
 from data_utils import MyDataset, get_transforms, my_collate
 
@@ -16,6 +16,7 @@ images_path = os.path.join(BASE_DIR, "images")
 
 
 def evaluate(model, eval_loader, dist_threshold=3):
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     runnning_dice_vec = 0
     runnning_prec_vec = 0
     runnning_rec_vec = 0
