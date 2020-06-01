@@ -19,6 +19,7 @@ def evaluate(model, eval_loader, dist_threshold=3):
     runnning_dice_vec = 0
     runnning_prec_vec = 0
     runnning_rec_vec = 0
+    dice_vec = []
     model.eval()
     for i, (image, targets) in enumerate(eval_loader):
 
@@ -103,6 +104,8 @@ def evaluate(model, eval_loader, dist_threshold=3):
         runnning_prec_vec += precision
         runnning_rec_vec += recall
 
+        dice_vec.append(dice)
+
         print(f"{i}, TP: {tp}, FP: {fp}, FN: {fn}, precision: {precision}, recall: {recall}, dice: {dice}")
         # print(f"Iteration: {i} of {len(eval_loader)}, image: {name}")
 
@@ -114,7 +117,7 @@ def evaluate(model, eval_loader, dist_threshold=3):
     rec_result = runnning_rec_vec / len(eval_loader)
     dice_result = runnning_dice_vec / len(eval_loader)
 
-    return prec_result, rec_result, dice_result
+    return prec_result, rec_result, dice_result, dice_vec
 
 
 if __name__ == "__main__":
