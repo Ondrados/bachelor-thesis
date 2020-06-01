@@ -15,7 +15,7 @@ models_path = os.path.join(BASE_DIR, "models")
 images_path = os.path.join(BASE_DIR, "images")
 
 
-def evaluate(dist_threshold=2):
+def evaluate(model, eval_loader, dist_threshold=3):
     runnning_dice_vec = 0
     runnning_prec_vec = 0
     runnning_rec_vec = 0
@@ -137,12 +137,12 @@ if __name__ == "__main__":
 
     split = "stage1_train"
     dataset = MyDataset(split=split, transforms=get_transforms(train=True, rescale_size=(256, 256)))
-    trainset, evalset = random_split(dataset, [603, 67])
+    trainset, evalset = random_split(dataset, [600, 70])
 
     train_loader = DataLoader(trainset, batch_size=1, num_workers=0, shuffle=True, collate_fn=my_collate)
     eval_loader = DataLoader(evalset, batch_size=1, num_workers=0, shuffle=False, collate_fn=my_collate)
 
-    precision, recall, dice = evaluate(dist_threshold=2)
+    precision, recall, dice = evaluate(model, eval_loader, dist_threshold=3)
 
     print(f"Done, precision: {precision}, recall: {recall}, dice: {dice}")
     # dice_vec = []
