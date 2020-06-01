@@ -50,7 +50,7 @@ if __name__ == "__main__":
     y_dataset = MyDataset(split=split, transforms=get_transforms(train=True, rescale_size=(416, 416), yolo=True))
     _, y_evalset = random_split(y_dataset, [600, 70])
     yolo_eval_loader = DataLoader(y_evalset, batch_size=1, num_workers=0, shuffle=False, collate_fn=my_collate)
-    y_precision, y_recall, y_dice, y_dice_vec = evaluate(yolo, eval_loader, dist_threshold=6)
+    y_precision, y_recall, y_dice, y_dice_vec = yolo_evaluate(yolo, eval_loader, dist_threshold=6)
     print(f"{yolo_name}, precision: {y_precision}, recall: {y_recall}, dice: {y_dice}")
     print(y_dice_vec)
 
