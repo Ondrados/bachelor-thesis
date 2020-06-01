@@ -35,6 +35,7 @@ if __name__ == "__main__":
 
     print(f"Loading {faster_name}")
     faster.load_state_dict(torch.load(os.path.join(models_path, faster_name), map_location=device))
+    faster.to(device=device)
     f_dataset = MyDataset(split=split, transforms=get_transforms(train=True, rescale_size=(256, 256)))
     _, f_evalset = random_split(f_dataset, [600, 70])
     faster_eval_loader = DataLoader(f_evalset, batch_size=1, num_workers=0, shuffle=False, collate_fn=my_collate)
@@ -45,6 +46,7 @@ if __name__ == "__main__":
     print(f"Loading {yolo_name}")
     yolo = Darknet(os.path.join(BASE_DIR, "yolo_v3/config/yolov3-custom.cfg"))
     yolo.load_state_dict(torch.load(os.path.join(models_path, yolo_name), map_location=device))
+    yolo.to(device=device)
     y_dataset = MyDataset(split=split, transforms=get_transforms(train=True, rescale_size=(416, 416), yolo=True))
     _, y_evalset = random_split(y_dataset, [600, 70])
     yolo_eval_loader = DataLoader(y_evalset, batch_size=1, num_workers=0, shuffle=False, collate_fn=my_collate)
@@ -55,6 +57,7 @@ if __name__ == "__main__":
     print(f"Loading {unet_name}")
     unet = UNet(n_channels=1, n_classes=1)
     unet.load_state_dict(torch.load(os.path.join(models_path, unet_name), map_location=device))
+    unet.to(device=device)
     u_dataset = MyDataset(split=split, model="unet")
     _, u_evalset = random_split(u_dataset, [600, 70])
     unet_eval_loader = DataLoader(u_evalset, batch_size=1, num_workers=1, shuffle=True, drop_last=True)
