@@ -33,7 +33,7 @@ def evaluate(model, eval_loader, dist_threshold=3):
         with torch.no_grad():
             outputs = model(image)
 
-        out = outputs[0, 0, :, :].numpy()
+        out = outputs[0, 0, :, :].cpu().numpy()
         array = np.where(out < 0.3, 0, out)
 
         h = 0.3
