@@ -21,7 +21,7 @@ if __name__ == "__main__":
 
     net = UNet(n_channels=1, n_classes=1)
     # net.load_state_dict(torch.load('/Users/ondra/Dev/Personal/cnn-cells/models/my_model2.pt',map_location=device))
-    net.load_state_dict(torch.load('/Users/ondra/Dev/Personal/cnn-cells/models/unet_2_30.pt', map_location=device))
+    net.load_state_dict(torch.load('/Users/ondra/Dev/Personal/cnn-cells/models/unet_2_15.pt', map_location=device))
     net.to(device)
 
     with torch.no_grad():

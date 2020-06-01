@@ -58,7 +58,7 @@ class MyDataset(Dataset):
         # TODO: make full unet integration
         if self.model == "unet":
             image = Image.open(self.image_list[index])
-            mask = self.combine_masks(self.mask_list[index])
+            mask, x, y = self.combine_masks(self.mask_list[index])
             self.transforms = T.Compose([
                 T.Resize((256, 256)),
                 T.Grayscale(num_output_channels=1),
@@ -67,7 +67,7 @@ class MyDataset(Dataset):
             image = self.transforms(image)
             mask = self.transforms(mask)
             name = self.id_list[index]
-            return image, mask, name
+            return image, mask, name, x, y
 
         image = np.array(Image.open(self.image_list[index]), dtype=np.uint8)
         image = image[:, :, :3]  # remove alpha channel
@@ -102,14 +102,19 @@ class MyDataset(Dataset):
     def combine_masks(self, mask_paths):
         comb_mask = None
         comb_mask_def = None
+        x_cor = []
+        y_cor = []
         for path in mask_paths:
             mask = Image.open(path)
+            width, height = mask.size
             if comb_mask_def is None:
                 comb_mask_def = np.zeros_like(mask)
             comb_mask_def += mask
             mask = imread(path)
             count = (mask == 255).sum()
             y, x = np.argwhere(mask == 255).sum(0) / count
+            x_cor.append((x/width)*256)
+            y_cor.append((y/height)*256)
             if comb_mask is None:
                 # comb_mask = np.zeros_like(mask)
                 comb_mask = np.zeros_like(mask)
@@ -127,7 +132,7 @@ class MyDataset(Dataset):
         # plt.imshow(comb_mask,cmap="gray")
         # plt.show(block=True)
 
-        return Image.fromarray(blurred)
+        return Image.fromarray(blurred), x_cor, y_cor
 
 
 def get_test_transforms(rescale_size=(416, 416)):
