@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader
 from data_utils import MyDataset, MyTestDataset
-from unet import UNet
+from models import UNet
 from skimage.feature import peak_local_max
 from skimage.morphology import extrema
 
@@ -20,7 +20,8 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     net = UNet(n_channels=1, n_classes=1)
-    net.load_state_dict(torch.load('/Users/ondra/Dev/Personal/cnn-cells/models/my_model2.pt',map_location=device))
+    # net.load_state_dict(torch.load('/Users/ondra/Dev/Personal/cnn-cells/models/my_model2.pt',map_location=device))
+    net.load_state_dict(torch.load('/Users/ondra/Dev/Personal/cnn-cells/models/unet_2_30.pt', map_location=device))
     net.to(device)
 
     with torch.no_grad():
@@ -33,13 +34,13 @@ if __name__ == "__main__":
         outputs = net(inputs)
     out = outputs[0, 0, :, :].numpy()
     # mask = masks[0, 0, :, :].numpy()
-    # array = np.where(out > 0.3, 1, 0)
+    array = np.where(out < 0.3, 0, out)
     # diff = mask-array
 
 
 
     h = 0.3
-    h_maxima = extrema.h_maxima(out, h)
+    h_maxima = extrema.h_maxima(array, h)
     label_h_maxima = label(h_maxima)
     overlay_h = color.label2rgb(label_h_maxima, inputs[0, 0, :, :], alpha=0.7, bg_label=0,
                                 bg_color=None, colors=[(1, 0, 0)])
@@ -84,11 +85,23 @@ if __name__ == "__main__":
     # plt.imshow(inputs[0, 0, :, :].detach().cpu().numpy(), cmap="gray")
     # plt.plot(coordinates[:,1],coordinates[:,0], 'r+')
 
-    plt.imshow(inputs[0, 0, :, :].detach().cpu().numpy(), cmap="gray")
-    plt.plot(coordinates[:, 1], coordinates[:, 0], 'r+', markersize=10)
-    # plt.savefig('images/detect6.png')
-    plt.show(block=True)
-    plt.close()
+    # plt.imshow(inputs[0, 0, :, :].detach().cpu().numpy(), cmap="gray")
+    # plt.plot(coordinates[:, 1], coordinates[:, 0], 'r+', markersize=10)
+    # # plt.savefig('images/detect6.png')
+    # plt.show(block=True)
+    # plt.close()
+
+    fig = plt.figure(dpi=300)
+    ax1 = fig.add_subplot(1, 3, 1)
+    ax1.imshow(inputs[0, 0, :, :].detach().cpu().numpy(), cmap="gray")
+    ax1.plot(coordinates[:, 1], coordinates[:, 0], 'r+', markersize=10)
+    ax2 = fig.add_subplot(1, 3, 2)
+    ax2.imshow(outputs[0, 0, :, :].detach().cpu().numpy(), cmap="gray")
+    ax3 = fig.add_subplot(1, 3, 3)
+    # ax3.imshow(inputs[0, 0, :, :].detach().cpu().numpy(), cmap="gray")
+    # ax3.imshow(outputs[0, 0, :, :].detach().cpu().numpy(), cmap="jet", alpha=0.3)
+    ax3.imshow(array)
+    plt.show()
 
     # fig.add_subplot(1, 4, 4)
     # plt.title("Detection")
