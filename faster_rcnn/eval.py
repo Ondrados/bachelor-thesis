@@ -93,7 +93,10 @@ def evaluate(dist_threshold=2):
                 fp += 1
         tp = len(gt_x) if tp > len(gt_x) else tp
         fn = len(gt_x) - tp
-        precision = tp / (tp + fp)
+        if (tp + fp) == 0:
+            precision = 0
+        else:
+            precision = tp / (tp + fp)
         recall = tp / (tp + fn)
         dice = (2 * tp) / (2 * tp + fp + fn)
         runnning_dice_vec += dice
