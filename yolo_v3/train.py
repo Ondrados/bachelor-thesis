@@ -33,7 +33,7 @@ def train():
 
         print(f"Epoch: {epoch}, iteration: {i} of {len(train_loader)}, loss: {loss_item}, image: {name}")
 
-    training_loss.append(running_loss / len(trainset))
+    training_loss.append(running_loss / len(train_loader))
 
 
 def evaluate():
