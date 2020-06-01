@@ -28,18 +28,17 @@ def evaluate():
         with torch.no_grad():
             predictions = model(image)
 
-
         image_copy = Image.fromarray(image.cpu().numpy()[0, 0, :, :])
         if image_copy.mode != "RGB":
             image_copy = image_copy.convert("RGB")
         draw = ImageDraw.Draw(image_copy)
+        for box in targets[0]["boxes"]:
+            x0, y0, x1, y1 = box
+            draw.rectangle([(x0, y0), (x1, y1)], outline=(0, 255, 0))
         for box, score in zip(predictions[0]["boxes"], predictions[0]["scores"]):
             if score > 0.5:
                 x0, y0, x1, y1 = box
                 draw.rectangle([(x0, y0), (x1, y1)], outline=(255, 0, 255))
-        for box in targets[0]["boxes"]:
-            x0, y0, x1, y1 = box
-            draw.rectangle([(x0, y0), (x1, y1)], outline=(0, 255, 0))
         # image_copy.show()
         # image_copy.save(os.path.join(images_path, f"faster_rcnn/{attempt}/images/{name}.png"))
         plt.imshow(image_copy)
