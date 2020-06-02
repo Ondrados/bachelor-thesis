@@ -37,7 +37,7 @@ if __name__ == "__main__":
     faster.load_state_dict(torch.load(os.path.join(models_path, faster_name), map_location=device))
     faster.to(device=device)
     dataset = MyDataset(split=split, transforms=get_transforms(train=True, rescale_size=(256, 256)))
-    _, f_evalset = random_split(dataset, [600, 70])
+    _, f_evalset = random_split(dataset, [600, 50])
     faster_eval_loader = DataLoader(f_evalset, batch_size=1, num_workers=0, shuffle=False, collate_fn=my_collate)
     f_precision, f_recall, f_dice, f_dice_vec = faster_evaluate(faster, faster_eval_loader, dist_threshold=3)
     print(f"{faster_name}, precision: {f_precision}, recall: {f_recall}, dice: {f_dice}")
@@ -65,8 +65,23 @@ if __name__ == "__main__":
     print(f"{unet_name}, precision: {u_precision}, recall: {u_recall}, dice: {u_dice}")
     print(u_dice_vec)
 
+    data = [f_dice_vec, y_dice_vec, u_dice_vec]
+
     fig, ax = plt.subplots()
-    ax.set_title('Multiple Samples with Different sizes')
-    ax.boxplot([f_dice_vec, y_dice_vec, u_dice_vec])
+    ax.set_title('Porovnání Dice koeficientů pro jednotlivé modely')
+    ax.set_ylabel('Dice')
+    ax.set_xticklabels(["Faster R-CNN", "YOLOv3", "U-Net"])
+    ax.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.3)
+    ax.set_axisbelow(True)
+    bp = ax.boxplot(data, notch=0, sym='+', vert=1, whis=1.5)
+    plt.setp(bp['boxes'], color='black')
+    plt.setp(bp['whiskers'], color='black')
+    plt.setp(bp['fliers'], color='black', marker='o')
+    plt.setp(bp['medians'], color='red')
+    for i in range(len(data)):
+        x = (bp['medians'][i].get_xdata()[1] + bp['medians'][i].get_xdata()[0]) / 2 - 0.1
+        y = bp['medians'][i].get_ydata()[0] + 0.01
+        med = round(bp['medians'][i].get_ydata()[0], 3)
+        plt.text(x, y, med, fontsize=10)
     plt.savefig(os.path.join(images_path, f"plots/boxplot.png"), dpi=200)
 
