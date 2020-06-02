@@ -37,7 +37,7 @@ if __name__ == "__main__":
     faster.load_state_dict(torch.load(os.path.join(models_path, faster_name), map_location=device))
     faster.to(device=device)
     dataset = MyDataset(split=split, transforms=get_transforms(train=True, rescale_size=(256, 256)))
-    _, f_evalset = random_split(dataset, [600, 50])
+    _, f_evalset = random_split(dataset, [600, 70])
     faster_eval_loader = DataLoader(f_evalset, batch_size=1, num_workers=0, shuffle=False, collate_fn=my_collate)
     f_precision, f_recall, f_dice, f_dice_vec = faster_evaluate(faster, faster_eval_loader, dist_threshold=3)
     print(f"{faster_name}, precision: {f_precision}, recall: {f_recall}, dice: {f_dice}")
