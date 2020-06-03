@@ -26,7 +26,7 @@ if __name__ == "__main__":
     yolo_name = "yolo_v3_4_20.pt"
     unet_name = "unet_2_15.pt"
 
-    split = "stage1_train"
+    split = "stage1_test"
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print(f"Running on {device}")
@@ -34,21 +34,21 @@ if __name__ == "__main__":
     print(f"Loading {faster_name}")
     faster.load_state_dict(torch.load(os.path.join(models_path, "faster_rcnn_7_30.pt"), map_location=device))
     faster.to(device=device)
-    dataset = MyTestDataset(split='stage1_test', transforms=get_test_transforms(rescale_size=(256, 256)))
+    dataset = MyTestDataset(split=split, transforms=get_test_transforms(rescale_size=(256, 256)))
     faster_loader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=False)
 
     print(f"Loading {yolo_name}")
     yolo = Darknet(os.path.join(BASE_DIR, "yolo_v3/config/yolov3-custom.cfg"))
     yolo.load_state_dict(torch.load(os.path.join(models_path, yolo_name), map_location=device))
     yolo.to(device=device)
-    dataset = MyTestDataset(split='stage1_test', transforms=get_test_transforms(rescale_size=(416, 416)))
+    dataset = MyTestDataset(split=split, transforms=get_test_transforms(rescale_size=(416, 416)))
     yolo_loader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=False)
 
     print(f"Loading {unet_name}")
     unet = UNet(n_channels=1, n_classes=1)
     unet.load_state_dict(torch.load(os.path.join(models_path, unet_name), map_location=device))
     unet.to(device=device)
-    dataset = MyTestDataset(model="unet")
+    dataset = MyTestDataset(split=split, model="unet")
     unet_loader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=False)
 
     for i, ((f_im, f_tar), (y_im, y_tar), (u_im, u_tar)) in enumerate(zip(faster_loader, yolo_loader, unet_loader)):
