@@ -165,12 +165,12 @@ class MyTestDataset(Dataset):
         if self.model == "unet":
             image = Image.open(self.image_list[index])
             self.transforms2 = T.Compose([
-                T.CenterCrop(256),
+                T.Resize((256, 256)),
                 T.Grayscale(num_output_channels=1),
                 T.ToTensor()
             ])
             image = self.transforms2(image)
-            return image
+            return image, self.id_list[index]
         image = np.array(Image.open(self.image_list[index]), dtype=np.uint8)
         image = image[:, :, :3]  # remove alpha channel
         targets = {
