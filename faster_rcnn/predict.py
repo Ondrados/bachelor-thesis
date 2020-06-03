@@ -14,8 +14,27 @@ models_path = os.path.join(BASE_DIR, "models")
 images_path = os.path.join(BASE_DIR, "images")
 
 
-def predict(model, dataloader):
+def predict(model, dataloader=None, image=None):
     model.eval()
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    if image is not None:
+        image = image[0].to(device=device)
+        start_time = time.time()
+        with torch.no_grad():
+            predictions = model(image)
+        elapsed_time = time.time() - start_time
+        pred_x = []
+        pred_y = []
+        for box, score in zip(predictions[0]["boxes"], predictions[0]["scores"]):
+            if score > 0.5:
+                x0, y0, x1, y1 = box
+                x = ((x0 + x1) / 2).tolist()
+                y = ((y0 + y1) / 2).tolist()
+                pred_x.append(x)
+                pred_y.append(y)
+        image = Image.fromarray(image.cpu().numpy()[0, 0, :, :]).convert("RGB")
+        return image, pred_x, pred_y
+
     for i, (image, targets) in enumerate(dataloader):
         image = image[0].to(device=device)
         name = targets["name"][0]

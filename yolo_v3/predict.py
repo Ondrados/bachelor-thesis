@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 from torch.utils.data import DataLoader, random_split
 
 from data_utils import MyTestDataset, get_test_transforms
-from models import Darknet
+from yolo_v3.models import Darknet
 from utils import non_max_suppression, resize_boxes
 
 from conf.settings import BASE_DIR
@@ -17,8 +17,30 @@ models_path = os.path.join(BASE_DIR, "models")
 images_path = os.path.join(BASE_DIR, "images")
 
 
-def predict(model, dataloader):
+def predict(model, dataloader=None, image=None):
     model.eval()
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    if image is not None:
+        image = image[0].to(device=device)
+        start_time = time.time()
+        with torch.no_grad():
+            outputs = model(image)
+        outputs = non_max_suppression(outputs, conf_thres=0.5)
+        elapsed_time = time.time() - start_time
+        if outputs[0] is not None:
+            boxes = outputs[0][:, 0:4]
+            boxes = resize_boxes(boxes, (416, 416), (256, 256))
+        pred_x = []
+        pred_y = []
+        for box in boxes:
+            x0, y0, x1, y1 = box
+            x = ((x0 + x1) / 2).tolist()
+            y = ((y0 + y1) / 2).tolist()
+            pred_x.append(x)
+            pred_y.append(y)
+        image = Image.fromarray(image.cpu().numpy()[0, 0, :, :]).convert("RGB").resize((256, 256))
+        return image, pred_x, pred_y
+
     for i, (image, targets) in enumerate(dataloader):
         image = image[0].to(device=device)
         name = targets["name"][0]
