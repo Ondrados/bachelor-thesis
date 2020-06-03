@@ -85,6 +85,18 @@ def rescale_boxes(boxes, current_dim, original_shape):
     boxes[:, 3] = ((boxes[:, 3] - pad_y // 2) / unpad_h) * orig_h
     return boxes
 
+def resize_boxes(boxes, original_size, new_size):
+    # type: (Tensor, List[int], List[int])
+    ratios = [float(s) / float(s_orig) for s, s_orig in zip(new_size, original_size)]
+    ratio_height, ratio_width = ratios
+    xmin, ymin, xmax, ymax = boxes.unbind(1)
+
+    xmin = xmin * ratio_width
+    xmax = xmax * ratio_width
+    ymin = ymin * ratio_height
+    ymax = ymax * ratio_height
+    return torch.stack((xmin, ymin, xmax, ymax), dim=1)
+
 
 def xywh2xyxy(x):
     y = x.new(x.shape)
