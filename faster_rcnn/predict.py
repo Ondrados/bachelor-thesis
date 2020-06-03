@@ -14,6 +14,7 @@ models_path = os.path.join(BASE_DIR, "models")
 images_path = os.path.join(BASE_DIR, "images")
 
 if __name__ == "__main__":
+    # torch.manual_seed(4)
     from models import model
 
     attempt = 7
@@ -25,7 +26,7 @@ if __name__ == "__main__":
 
     dataset = MyTestDataset(split='stage1_test', transforms=get_test_transforms(rescale_size=(256, 256)))
 
-    test_loader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=False)
+    test_loader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=True)
 
     model.eval()
     for i, (image, targets) in enumerate(test_loader):
@@ -48,4 +49,5 @@ if __name__ == "__main__":
         print(f"{name}, time: {elapsed_time}")
         plt.imshow(image_copy)
         plt.show()
+        break
 

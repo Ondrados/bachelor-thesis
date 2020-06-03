@@ -17,6 +17,7 @@ models_path = os.path.join(BASE_DIR, "models")
 images_path = os.path.join(BASE_DIR, "images")
 
 if __name__ == "__main__":
+    # torch.manual_seed(1)
     attempt = 4
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -27,8 +28,7 @@ if __name__ == "__main__":
 
     dataset = MyTestDataset(split='stage1_test', transforms=get_test_transforms(rescale_size=(416, 416)))
 
-    test_loader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=False)
-
+    test_loader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=True)
     model.eval()
     for i, (image, targets) in enumerate(test_loader):
         image = image[0].to(device=device)
