@@ -113,7 +113,7 @@ def evaluate(model, eval_loader, dist_threshold=3):
 
         dice_vec.append(dice)
 
-        print(f"{i}, TP: {tp}, FP: {fp}, FN: {fn}, precision: {precision}, recall: {recall}, dice: {dice}")
+        print(f"{name}, TP: {tp}, FP: {fp}, FN: {fn}, precision: {precision}, recall: {recall}, dice: {dice}")
         # print(f"Iteration: {i} of {len(eval_loader)}, image: {name}")
 
     # dice_vec.append(runnning_dice_vec / len(eval_loader))

@@ -28,6 +28,7 @@ def evaluate(model, eval_loader, dist_threshold=3):
     model.eval()
     for i, (image, mask, name, x, y) in enumerate(eval_loader):
 
+        name = name[0]
         image = image[0].to(device=device)[None, :, :, :]
 
         with torch.no_grad():
@@ -97,7 +98,7 @@ def evaluate(model, eval_loader, dist_threshold=3):
 
         dice_vec.append(dice)
 
-        print(f"{i}, TP: {tp}, FP: {fp}, FN: {fn}, precision: {precision}, recall: {recall}, dice: {dice}")
+        print(f"{name}, TP: {tp}, FP: {fp}, FN: {fn}, precision: {precision}, recall: {recall}, dice: {dice}")
         # print(f"Iteration: {i} of {len(eval_loader)}, image: {name}")
 
     # dice_vec.append(runnning_dice_vec / len(eval_loader))
