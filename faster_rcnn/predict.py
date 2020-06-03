@@ -13,23 +13,10 @@ from conf.settings import BASE_DIR
 models_path = os.path.join(BASE_DIR, "models")
 images_path = os.path.join(BASE_DIR, "images")
 
-if __name__ == "__main__":
-    # torch.manual_seed(4)
-    from models import model
 
-    attempt = 7
-
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    print(f"Running on {device}...")
-
-    model.load_state_dict(torch.load(os.path.join(models_path, "faster_rcnn_7_30.pt"), map_location=device))
-
-    dataset = MyTestDataset(split='stage1_test', transforms=get_test_transforms(rescale_size=(256, 256)))
-
-    test_loader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=True)
-
+def predict(model, dataloader):
     model.eval()
-    for i, (image, targets) in enumerate(test_loader):
+    for i, (image, targets) in enumerate(dataloader):
         image = image[0].to(device=device)
         name = targets["name"][0]
         start_time = time.time()
@@ -51,3 +38,19 @@ if __name__ == "__main__":
         plt.show()
         break
 
+
+if __name__ == "__main__":
+    # torch.manual_seed(4)
+    from models import model
+
+    attempt = 7
+    model_name = "faster_rcnn_7_30.pt"
+
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print(f"Running on {device}...")
+
+    model.load_state_dict(torch.load(os.path.join(models_path, "faster_rcnn_7_30.pt"), map_location=device))
+    dataset = MyTestDataset(split='stage1_test', transforms=get_test_transforms(rescale_size=(256, 256)))
+    test_loader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=True)
+
+    predict(model, test_loader)

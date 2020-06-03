@@ -16,21 +16,10 @@ from conf.settings import BASE_DIR
 models_path = os.path.join(BASE_DIR, "models")
 images_path = os.path.join(BASE_DIR, "images")
 
-if __name__ == "__main__":
-    # torch.manual_seed(1)
-    attempt = 4
 
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    print(f"Running on {device}...")
-
-    model = Darknet(os.path.join(BASE_DIR, "yolo_v3/config/yolov3-custom.cfg")).to(device)
-    model.load_state_dict(torch.load(os.path.join(models_path, "yolo_v3_4_20.pt"), map_location=device))
-
-    dataset = MyTestDataset(split='stage1_test', transforms=get_test_transforms(rescale_size=(416, 416)))
-
-    test_loader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=True)
+def predict(model, dataloader):
     model.eval()
-    for i, (image, targets) in enumerate(test_loader):
+    for i, (image, targets) in enumerate(dataloader):
         image = image[0].to(device=device)
         name = targets["name"][0]
         start_time = time.time()
@@ -56,4 +45,22 @@ if __name__ == "__main__":
         plt.imshow(image_copy)
         plt.show()
         break
+
+
+if __name__ == "__main__":
+    # torch.manual_seed(1)
+    attempt = 4
+    model_name = "yolo_v3_4_20.pt"
+
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    print(f"Running on {device}...")
+
+    model = Darknet(os.path.join(BASE_DIR, "yolo_v3/config/yolov3-custom.cfg")).to(device)
+    model.load_state_dict(torch.load(os.path.join(models_path, model_name), map_location=device))
+
+    dataset = MyTestDataset(split='stage1_test', transforms=get_test_transforms(rescale_size=(416, 416)))
+    test_loader = DataLoader(dataset, batch_size=1, num_workers=0, shuffle=True)
+
+    predict(model, test_loader)
+
 
