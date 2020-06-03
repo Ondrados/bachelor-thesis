@@ -133,6 +133,6 @@ if __name__ == "__main__":
 
     eval_loader = DataLoader(evalset, batch_size=1, num_workers=1, shuffle=True, drop_last=True)
 
-    precision, recall, dice = evaluate(model, eval_loader, dist_threshold=3)
+    precision, recall, dice, dice_vec = evaluate(model, eval_loader, dist_threshold=5)
 
     print(f"Done, precision: {precision}, recall: {recall}, dice: {dice}")

@@ -145,24 +145,6 @@ if __name__ == "__main__":
 
     train_loader = DataLoader(trainset, batch_size=1, num_workers=0, shuffle=True, collate_fn=my_collate)
     eval_loader = DataLoader(evalset, batch_size=1, num_workers=0, shuffle=False, collate_fn=my_collate)
-
-    precision, recall, dice = evaluate(model, eval_loader, dist_threshold=3)
+    precision, recall, dice, dice_vec = evaluate(model, eval_loader, dist_threshold=3)
 
     print(f"Done, precision: {precision}, recall: {recall}, dice: {dice}")
-    # dice_vec = []
-    # prec_vec = []
-    # rec_vec = []
-    # # for thres in [0, 1, 1.5, 2, 2.5, 3, 3.5, 5]:
-    # for thres in [50, 25, 10, 5, 2, 1.5, 1, 0.5, 0]:
-    #     evaluate(thres)
-    # print(rec_vec)
-    # print(prec_vec)
-    # rec_vec.reverse()
-    #
-    # fig, ax = plt.subplots()
-    # ax.set_title('Multiple Samples with Different sizes')
-    # plt.xlabel("Recall")
-    # plt.ylabel("Precision")
-    # # ax.boxplot(dice_vec)
-    # ax.plot(rec_vec, prec_vec, 'r*')
-    # plt.show()

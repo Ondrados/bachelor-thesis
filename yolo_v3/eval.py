@@ -149,6 +149,6 @@ if __name__ == "__main__":
 
     eval_loader = DataLoader(evalset, batch_size=1, num_workers=0, shuffle=False, collate_fn=my_collate)
 
-    precision, recall, dice = evaluate(model, eval_loader, dist_threshold=6)
+    precision, recall, dice, dice_vec = evaluate(model, eval_loader, dist_threshold=6)
 
     print(f"Done, precision: {precision}, recall: {recall}, dice: {dice}")
