@@ -19,10 +19,10 @@
     pip install -r requirements_tiny.txt
     ```
 
-4. download weights from releases and extract it inside cnn-cells folder
+4. download weights from releases and extract it into models folder inside cnn-cells
     ```
     wget https://github.com/Ondrados/cnn-cells/releases/download/v1.0/models.zip
-    unzip models.zip
+    unzip models.zip -d models
     ```
 
 5. export python path for this repository to your enviroment
