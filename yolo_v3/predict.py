@@ -25,7 +25,7 @@ def predict(model, dataloader=None, image=None):
         start_time = time.time()
         with torch.no_grad():
             outputs = model(image)
-        outputs = non_max_suppression(outputs, conf_thres=0.5)
+        outputs = non_max_suppression(outputs, conf_thres=0.5, nms_thres=0.2)
         elapsed_time = time.time() - start_time
         if outputs[0] is not None:
             boxes = outputs[0][:, 0:4]

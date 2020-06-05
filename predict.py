@@ -53,47 +53,63 @@ if __name__ == "__main__":
 
     for i, ((f_im, f_tar), (y_im, y_tar), (u_im, u_tar)) in enumerate(zip(faster_loader, yolo_loader, unet_loader)):
 
-        f_image, f_x, f_y = faster_predict(faster, image=f_im)
-        y_image, y_x, y_y = yolo_predict(yolo, image=y_im)
-        u_image, u_x, u_y = unet_predict(unet, image=u_im)
+        name = u_tar[0]
+
+        try:
+            f_image, f_x, f_y = faster_predict(faster, image=f_im)
+            y_image, y_x, y_y = yolo_predict(yolo, image=y_im)
+            u_image, u_x, u_y = unet_predict(unet, image=u_im)
+        except:
+            print(f"Skipping {name}")
+            continue
 
         fig = plt.figure(dpi=300)
         ax1 = fig.add_subplot(1, 3, 1)
         ax1.imshow(f_image, cmap="gray")
-        ax1.plot(f_x, f_y, 'r+', linewidth=3, markersize=10)
+        ax1.plot(f_x, f_y, 'r+', linewidth=3, markersize=8)
         ax1.set_title('Faster R-CNN')
         ax1.axis('off')
         ax2 = fig.add_subplot(1, 3, 2)
         ax2.imshow(y_image, cmap="gray")
-        ax2.plot(y_x, y_y, 'r+', linewidth=3, markersize=10)
+        ax2.plot(y_x, y_y, 'r+', linewidth=3, markersize=8)
         ax2.set_title('YOLOv3')
         ax2.axis('off')
         ax3 = fig.add_subplot(1, 3, 3)
         ax3.imshow(u_image, cmap="gray")
-        ax3.plot(u_x, u_y, 'r+', linewidth=3, markersize=10)
+        ax3.plot(u_x, u_y, 'r+', linewidth=3, markersize=8)
         ax3.set_title('U-Net')
         ax3.axis('off')
+        plt.tight_layout()
         plt.show()
 
-        # fig = plt.figure(dpi=300)
+        # os.makedirs(os.path.join(images_path, f"all/{name}"), exist_ok=True)
+        #
+        # fig = plt.figure(dpi=200)
         # ax1 = fig.add_subplot(1, 1, 1)
         # ax1.imshow(f_image, cmap="gray")
         # ax1.plot(f_x, f_y, 'r+', linewidth=3, markersize=12)
         # ax1.axis('off')
-        # plt.show()
+        # # plt.show()
+        # plt.savefig(os.path.join(images_path, f"all/{name}/f_det_{i}.png"), dpi=200)
         #
-        # fig = plt.figure(dpi=300)
+        # fig = plt.figure(dpi=200)
         # ax1 = fig.add_subplot(1, 1, 1)
         # ax1.imshow(y_image, cmap="gray")
         # ax1.plot(y_x, y_y, 'r+', linewidth=3, markersize=12)
         # ax1.axis('off')
-        # plt.show()
+        # # plt.show()
+        # plt.savefig(os.path.join(images_path, f"all/{name}/y_det_{i}.png"), dpi=200)
         #
-        # fig = plt.figure(dpi=300)
+        # fig = plt.figure(dpi=200)
         # ax1 = fig.add_subplot(1, 1, 1)
         # ax1.imshow(u_image, cmap="gray")
         # ax1.plot(u_x, u_y, 'r+', linewidth=3, markersize=12)
         # ax1.axis('off')
-        # plt.show()
+        # # plt.show()
+        # plt.savefig(os.path.join(images_path, f"all/{name}/u_det_{i}.png"), dpi=200)
+        #
+        # plt.close('all')
+
+        print(name)
 
         break
