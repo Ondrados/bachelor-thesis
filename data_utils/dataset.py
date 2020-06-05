@@ -182,6 +182,23 @@ class MyTestDataset(Dataset):
         return image, targets
 
 
+class MyDemoDataset(MyTestDataset):
+    def __init__(self, transforms=get_test_transforms(), path=os.path.join(BASE_DIR, 'demo_images'), model=None):
+        self.path = path
+
+        self.transforms = transforms
+        self.model = model
+
+        self.path_id_list = glob.glob(os.path.join(self.path, '*'))
+        self.id_list = []
+        self.image_list = []
+
+        for path_id in self.path_id_list:
+            images = glob.glob(path_id + '/images/*png')
+            self.image_list.extend(images)
+            self.id_list.append(os.path.basename(path_id))
+
+
 if __name__ == "__main__":
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
