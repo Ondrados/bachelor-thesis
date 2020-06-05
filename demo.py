@@ -53,8 +53,9 @@ if __name__ == "__main__":
     for i, ((f_im, f_tar), (y_im, y_tar), (u_im, u_tar)) in enumerate(zip(faster_loader, yolo_loader, unet_loader)):
 
         name = u_tar[0]
+        length = len(unet_loader)
 
-        print(f"Detecting cells in {name}")
+        print(f"{i+1}/{length}: Detecting cells in {name}")
         start_time = time.time()
 
         f_image, f_x, f_y = faster_predict(faster, image=f_im)
