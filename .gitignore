@@ -12,7 +12,7 @@ weights/
 *.pth
 
 # images
-images/
+/images
 
 # jupyter
 .ipynb_checkpoints/
